@@ -1,0 +1,116 @@
+<!--hospitalDetail.html 医院入驻后看详细信息-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/page/commen.js"></script>
+    <link rel="stylesheet" href="../css/page/hospitalEntry.css">
+    <style>
+        .page-tit {
+            margin-bottom: 20px;
+        }
+        .pageCard {
+            padding: 20px;
+        }
+        .layui-input-block {
+            padding-left: 10px;
+            line-height: 38px;
+        }
+        .layui-form-label {
+            width: 120px;
+        }
+        .layui-input-block {
+            margin-left: 145px;
+        }
+        .img-detail img {
+            max-width: 80%;
+        }
+    </style>
+</head>
+<body>
+    <div class="pageBox">
+        <div class="pageCard" style="display: block;">
+            <div class="layui-row">
+                <div class="page-tit com-tit blueblack">入驻医院详情</div>
+                <div class="layui-col-md10">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">医疗机构名称</label>
+                        <div class="layui-input-block" id="name"></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">医院等级</label>
+                        <div class="layui-input-block" id="levelType"></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">医院类型</label>
+                        <div class="layui-input-block" id="typeText"></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">区划编码</label>
+                        <div class="layui-input-block" id="areaCode"></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">医疗机构地址</label>
+                        <div class="layui-input-block" id="address"></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">法人姓名</label>
+                        <div class="layui-input-block" id="legalParson"></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">联系电话</label>
+                        <div class="layui-input-block" id="telephone"></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">法人身份证（正面）</label>
+                        <div class="layui-input-block img-detail" id="legalIdcardFront">
+                            <img src="" alt="">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">法人身份证（反面）</label>
+                        <div class="layui-input-block img-detail" id="legalIdcardReverse">
+                            <img src="" alt="">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">营业执照</label>
+                        <div class="layui-input-block img-detail" id="bussinessLicense">
+                            <img src="" alt="">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">医院图片</label>
+                        <div class="layui-input-block img-detail" id="imageUrl">
+                            <img src="" alt="">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">医院介绍</label>
+                        <div class="layui-input-block" id="introduce"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    $(function () {
+        var hospitalInfo;
+        getUser();
+        function getUser() {
+            getAjax('/reg/user/getUserInfo', {}, function (resultMsg) {
+                hospitalInfo = resultMsg.data.hospitalInfo;
+                for (var key in hospitalInfo) {
+                    if (key == 'legalIdcardFront' || key == 'legalIdcardReverse' || key == 'bussinessLicense' || key == 'imageUrl') {
+                        $('#' + key).find('img').attr('src', hospitalInfo[key]);
+                    } else {
+                        $('#' + key).html(hospitalInfo[key]);
+                    }
+                }
+            });
+        }
+    })
+</script>
+</html>

@@ -1,0 +1,274 @@
+<!--登录-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>预约诊疗服务平台管理</title>
+    <link rel="stylesheet" href="js/layui/css/layui.css">
+    <script type="text/javascript" src="js/layui/layui.js" ></script>
+    <script src="js/cryptojs.js"></script>
+    <style>
+        .login_btn{
+            text-align: center;
+        }
+        .layui-btn-primary:hover {
+            border-color: #1E9FFF;
+        }
+        .title_t{
+            font-size: 26px;
+            margin: 0 20px 20px;
+        }
+        html,body {
+            width: 100%;height: 100%;
+            padding: 0;margin: 0; overflow: hidden;
+        }
+        .loginBox {
+            width: 100%;height: 100%;
+            background: url("img/qyxxh_loginbg.png") center no-repeat;
+            background-size: 100% 100%;
+            position: relative;
+        }
+        .loginCard {
+            width: 90%;height: 80%; border-radius: 20px;
+            background: url('img/qyxxh_login_img1.png') no-repeat 145px center;
+            background-size: 40% 82%,  100% 100%;
+            position: absolute; top: 10%; left: 0;
+        }
+        .loginForm {
+            width: 40%;
+            height: 63%;
+            float: right;
+            position: relative;
+            padding: 20px 30px;
+            border-radius: 4px;
+            background: #fff;
+            margin-top: 8%;
+        }
+        .formTit1 {
+            margin: 10% 0 4% 0;
+            color: #217BFA; font-size: 26px;
+        }
+        .formTit2 {
+            margin-bottom: 6%;
+            color: #217BFA; font-size: 20px;
+        }
+        .formRemark {
+            color: #C5C7C9; position: absolute; bottom: 20px; left: 30px;
+        }
+        .login_btn{
+            margin-top: 40px;
+        }
+        /*.layui-input-block{*/
+            /*margin-left: 0;*/
+        /*}*/
+        .layui-btn-normal{
+            background: #217BFA;
+        }
+    </style>
+</head>
+<body>
+<div class="loginBox">
+    <div class="loginCard">
+        <div class="loginForm">
+            <div class="formTit1">欢迎登录</div>
+            <div class="formTit2">预约诊疗服务平台管理</div>
+            <div class="formbox">
+                <form class="layui-form" action="">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">用户名</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="username" required  lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">密码</label>
+                        <div class="layui-input-block">
+                            <input type="password" name="password" required lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                        </div>
+                        <!--<div class="layui-form-mid layui-word-aux">辅助文字</div>-->
+                    </div>
+                    <!--<div class="drag">-->
+                    <!--<div class="bg"></div>-->
+                    <!--<div class="text" onselectstart="return false;">请拖动滑块验证</div>-->
+                    <!--<div class="btn">&gt;&gt;</div>-->
+                    <!--</div>-->
+                    <!--<a href="#" id="changeImg">-->
+                    <!--<canvas class="show-captcha" id="canvas" width="150" height="40"></canvas>-->
+                    <!--</a>-->
+                    <div class="login_btn layui-form-item">
+                        <!--<div class="layui-input-block">-->
+                        <button type="button" class="layui-btn layui-btn-normal" lay-submit lay-filter="loginBtn">登录</button>
+                        <!--<button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+                        <!--</div>-->
+                    </div>
+                </form>
+            </div>
+            <!--<div class="formRemark">技术支持:山东博乐通信息科技有限公司</div>-->
+        </div>
+    </div>
+</div>
+    <!--<div class="box">-->
+        <!--<div class="login_box">-->
+            <!--<div class="title_t">-->
+                <!--预约诊疗服务平台管理-->
+            <!--</div>-->
+            <!--<form class="layui-form" action="">-->
+                <!--<div class="layui-form-item">-->
+                    <!--<label class="layui-form-label">用户名</label>-->
+                    <!--<div class="layui-input-block">-->
+                        <!--<input type="text" name="username" required  lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="layui-form-item">-->
+                    <!--<label class="layui-form-label">密码</label>-->
+                    <!--<div class="layui-input-block">-->
+                        <!--<input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">-->
+                    <!--</div>-->
+                    <!--&lt;!&ndash;<div class="layui-form-mid layui-word-aux">辅助文字</div>&ndash;&gt;-->
+                <!--</div>-->
+                <!--&lt;!&ndash;<div class="drag">&ndash;&gt;-->
+                    <!--&lt;!&ndash;<div class="bg"></div>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<div class="text" onselectstart="return false;">请拖动滑块验证</div>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<div class="btn">&gt;&gt;</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<a href="#" id="changeImg">&ndash;&gt;-->
+                    <!--&lt;!&ndash;<canvas class="show-captcha" id="canvas" width="150" height="40"></canvas>&ndash;&gt;-->
+                <!--&lt;!&ndash;</a>&ndash;&gt;-->
+                <!--<div class="login_btn layui-form-item">-->
+                    <!--&lt;!&ndash;<div class="layui-input-block">&ndash;&gt;-->
+                    <!--<button type="button" class="layui-btn layui-btn-normal" lay-submit lay-filter="loginBtn">登录</button>-->
+                    <!--&lt;!&ndash;<button type="reset" class="layui-btn layui-btn-primary">重置</button>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                <!--</div>-->
+            <!--</form>-->
+        <!--</div>-->
+    <!--</div>-->
+    <script type="text/javascript" src="js/jquery-1.8.0.js" ></script>
+    <script>
+        $(function () {
+            // jQuery(function($){
+            //
+            //     /**生成一个随机数**/
+            //     function randomNum(min, max) {
+            //         return Math.floor(Math.random() * (max - min) + min);
+            //     }
+            //     /**生成一个随机色**/
+            //     function randomColor(min, max) {
+            //         var r = randomNum(min, max);
+            //         var g = randomNum(min, max);
+            //         var b= randomNum(min, max);
+            //         return "rgb(" + r + "," + g + "," + b + ")";
+            //     }
+            //     var code=drawPic();
+            //     document.getElementById("changeImg").onclick = function(e) {
+            //         e.preventDefault();
+            //         code=drawPic();
+            //         console.log(code)
+            //     }
+            //     /**绘制验证码图片**/
+            //     function drawPic() {
+            //         var canvas = document.getElementById("canvas");
+            //         var width = canvas.width;
+            //         var height = canvas.height;
+            //         //获取该canvas的2D绘图环境
+            //         var ctx = canvas.getContext('2d');
+            //         ctx.textBaseline ='bottom';
+            //         /**绘制背景色**/
+            //         ctx.fillStyle = randomColor(180,240);
+            //         //颜色若太深可能导致看不清
+            //         ctx.fillRect(0,0,width,height);
+            //         /**绘制文字**/
+            //         var str ='ABCEFGHJKLMNPQRSTWXY123456789';
+            //
+            //         var code="";
+            //         //生成四个验证码
+            //         for(var i=1;i<=4;i++) {
+            //             var txt = str[randomNum(0,str.length)];
+            //             code=code+txt;
+            //             ctx.fillStyle = randomColor(50,160);
+            //             //随机生成字体颜色
+            //             ctx.font = randomNum(15,40) +'px SimHei';
+            //             //随机生成字体大小
+            //             var x =10 +i *25;
+            //             var y = randomNum(25,35);
+            //             var deg = randomNum(-45,45);
+            //             //修改坐标原点和旋转角度
+            //             ctx.translate(x, y);
+            //             ctx.rotate(deg * Math.PI /180);
+            //             ctx.fillText(txt,0,0);
+            //             //恢复坐标原点和旋转角度
+            //             ctx.rotate(-deg * Math.PI /180);
+            //             ctx.translate(-x, -y);
+            //         }
+            //
+            //         /**绘制干扰线**/
+            //         for(var i=0;i<3;i++) {
+            //             ctx.strokeStyle = randomColor(40, 180);
+            //             ctx.beginPath();
+            //             ctx.moveTo(randomNum(0,width/2), randomNum(0,height/2));
+            //             ctx.lineTo(randomNum(0,width/2), randomNum(0,height));
+            //             ctx.stroke();
+            //         }
+            //         /**绘制干扰点**/
+            //         for(var i=0;i <50;i++) {
+            //             ctx.fillStyle = randomColor(255);
+            //             ctx.beginPath();
+            //             ctx.arc(randomNum(0, width), randomNum(0, height),1,0,2* Math.PI);
+            //             ctx.fill();
+            //         }
+            //         return code;
+            //     }
+            // });
+            layui.use('form', function(){
+                var form = layui.form;
+                //监听提交
+                form.on('submit(loginBtn)', function(data){
+                    var jsonParam = {
+                        username: data.field.username,
+                        password: data.field.password
+                    }
+                    loginFun(jsonParam);
+                });
+                function encrypt(word){
+                    var key = CryptoJS.enc.Utf8.parse("BhZ+FDMne1+xfU7kIihiLHd-EtXwYiKE");
+                    var srcs = CryptoJS.enc.Utf8.parse(word);
+                    var encrypted = CryptoJS.AES.encrypt(srcs, key, {mode:CryptoJS.mode.ECB,padding: CryptoJS.pad.Pkcs7});
+                    return encrypted.toString();
+                }
+                function loginFun (data) {
+                    $.ajax({
+                        type: 'get',
+                        dataType: "jsonp",
+                        jsonp: "callback",//服务端用于接收
+                        async: false,
+                        contentType: 'application/json',
+                        // url: 'http://192.168.1.81:8082/login/oauth',
+                        url: 'http://demo.sdboletong.com:8098/appointment/login/oauth',
+                        data: data,
+                        success: function (resultMsg) {
+                            if (resultMsg.retCode == 0) {
+                                var authToken = encrypt('appointment' + ',' + data.username + ',' + resultMsg.data);
+                                // var authToken = encrypt('client' + ',' + data.username + ',' + resultMsg.data);
+                                localStorage.setItem('userName', data.username);
+                                localStorage.setItem('authTokenPt', authToken);
+                                localStorage.setItem('oldPass', data.password);
+                                window.location.href = "page/index.html";
+                            } else {
+                                layer.alert('提示', {
+                                    content: resultMsg.retMsg
+                                });
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            console.log(XMLHttpRequest);
+                            console.log(textStatus);
+                            console.log(errorThrown);
+                            alert('加载资源失败');
+                        }
+                    });
+                }
+            });
+        })
+    </script>
+</body>
+</html>

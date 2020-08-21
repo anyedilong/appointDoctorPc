@@ -1,0 +1,210 @@
+.pageCard {
+    background: #FFFFFF;
+    width: 80%;
+    border-radius: 8px;
+}
+/*步骤条*/
+.steps:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+/*步骤描述*/
+.steps li {
+    list-style-type: none;
+    font-size: 12px;
+    text-align: center;
+    width: 33%;
+    padding-top: 30px;
+    height: 70px;
+    position: relative;
+    display: inline-block;
+}
+/*步骤数字*/
+.steps li:before{
+    content: url("../../img/bluecircle.png");
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    bottom: 0px;
+    left: 50%;
+    margin-left: -15px;
+    z-index: 1;
+}
+.steps li{
+    color: #3A86F3;
+}
+/*连接线*/
+.steps li ~ li:after {
+    content: '';
+    width: 100%;
+    height: 2px;
+    background-color: #3A86F3;
+    position: absolute;
+    left: -50%;
+    bottom: 15px;
+}
+/*将当前/完成步骤之前的数字及连接线变绿*/
+.steps li.active:before{
+    content: url("../../img/bluecircle.png");
+}
+.steps li.active:after {
+    background-color: #3A86F3;
+}
+/*将当前/完成步骤之后的数字及连接线变灰*/
+.steps li.active ~ li{
+    color: #757575;
+}
+.steps li.active ~ li:before{
+    content: url("../../img/greatcircle.png");
+}
+.steps li.active ~ li:after {
+    background-color: #F5F5F5;
+}
+.step_content {
+    margin-top: 50px;
+}
+.layui-form-item {
+    margin-bottom: 15px;
+}
+.layui-form-label {
+    width: 92px;
+}
+.layui-textarea {
+    resize: none;
+    height: 2em;
+}
+.layui-upload-drag {
+    border-color: #EAF2FE;
+    width: calc(100% - 65px);
+    max-width: 170px;
+    height: 80px;
+    line-height: 80px;
+    font-size: 50px;
+    background-position: center;
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+    /*background: url('../../img/logo.png');*/
+}
+/*.layui-input-block img {*/
+    /*width: 230px;*/
+    /*height: 230px;*/
+/*}*/
+.layui-upload-drag i {
+    color: #EAF2FE;
+}
+.upload-txt {
+    padding: 0 30px;
+    width: calc(100% - 65px);
+    max-width: 170px;
+    line-height: 40px;
+    text-align: center;
+}
+.my-checkbox {
+    height: 32px;
+    line-height: 32px;
+    cursor: pointer;
+}
+.my-checkbox>div {
+    display: none;
+}
+.my-checked {
+    display: block !important;
+}
+.my-checkbox .my-label{
+    float: left;
+}
+.my-checkbox i{
+    float: left;
+    font-size: 20px;
+    color: #EAF2FE;
+    margin-right: 10px;
+}
+.checkdiv2, .checkdiv2 i{
+    color: #3A86F3
+}
+.step-top-bg {
+    background: #4B5E7C;
+    height: 150px;
+    color: #FFFFFF;
+    position: relative;
+}
+.status-box {
+    /*background: pink;*/
+    position: absolute;
+    top: 50%; left: 50px;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+.status-icon {
+    height: 65px;
+    line-height: 65px;
+    text-align: center;
+    width: 65px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+.status-icon i {
+    color: #0C0C0C;
+    font-size: 50px;
+}
+.status-txt div:nth-child(1) {
+    height: 40px;
+    line-height: 40px;
+    font-size: 20px;
+}
+.status-btn {
+    line-height: 65px;
+    margin-left: 50px;
+}
+.step-cont {
+    padding: 20px 20px 20px 50px;
+}
+.quanyi-tit {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+.quanyi {
+    width: 80%;
+}
+.quanyi-box {
+    float: left;
+    text-align: center;
+    font-size: 14px;
+}
+.quanyi-box i {
+    color: #0C0C0C;
+    font-size: 50px;
+}
+.pageCard, .step_content {
+    display: none;
+}
+#step1 {
+    display: block;
+}
+.step-box {
+    text-align: center;
+}
+#step3 .page-tit {
+    margin: 10px 0 30px;
+}
+.step-box img {
+    margin-bottom: 35px;
+}
+.step-zt {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+.step-ts {
+    font-size: 14px;
+    color: #A3A8AE;
+    margin-bottom: 20px;
+}
+.step-btn {
+    font-size: 14px;
+    color: #217BFA;
+}

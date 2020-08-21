@@ -1,0 +1,91 @@
+<!--friendLink.html 友情链接-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/page/commen.js"></script>
+    <style>
+        .layui-layer-add.layui-layer {
+            behavior: url(../js/PIE/PIE.htc);
+            position: relative;
+        }
+        .layui_box{
+            margin: 0 10px;
+        }
+        .layui-layer-add .layui-layer-title {
+            background: none;
+            border: none;
+        }
+        .layui-layer-add.layui-layer {
+            border-radius: 10px !important;
+            margin-top: -20px;
+        }
+        #addBox {
+            display: none;
+            padding: 40px 0px;
+        }
+        #addBox .layui-form-item {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="pageBox showLoading">
+        <form class="layui-form" action="" id="searchForm">
+            <div class="layui-inline">
+                <label class="layui-form-label">录入时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="startTime" class="layui-input" id="start_time"
+                           placeholder="开始时间">
+                </div>
+            </div>
+            <div class="layui-inline layui_box">
+                <label class="layui-form-label">至</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="endTime" class="layui-input" id="end_time"
+                           placeholder="结束时间">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="search">查询</button>
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="addBtn">新增</button>
+            </div>
+        </form>
+        <div class="data-card charts_box">
+            <table class="layui-hide" id="table" lay-filter="complainList"></table>
+            <script type="text/html" id="barDemo">
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            </script>
+            <div id="laypage"></div>
+        </div>
+        <div id="addBox" class="layui-row">
+            <div class="layui-col-md8 layui-col-md-offset2">
+                <form class="layui-form" action="" id="addform">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">友情链接名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="name" required  lay-verify="required" placeholder="请输入友情链接名称" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">友情链接地址</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="linkUrl" required  lay-verify="required" placeholder="请输入友情链接地址" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item form-btn layui-row layui-col-space20">
+                        <div class="layui-col-md6">
+                            <button type="button" class="add-close layui-btn layui-btn-primary fr">取消</button>
+                        </div>
+                        <div class="layui-col-md6">
+                            <button type="button" lay-submit lay-filter="saveLink" class="layui-btn layui-btn-normal fl">保存</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../js/page/friendLink.js"></script>
+</html>

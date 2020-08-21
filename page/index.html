@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>预约诊疗服务平台管理</title>
+    <link rel="stylesheet" href="../css/page/index.css">
+    <script src="../js/page/commen.js"></script>
+    <style>
+        .layui-layer-login.layui-layer {
+            behavior: url(../js/PIE/PIE.htc);
+            position: relative;
+        }
+        .leftMenu{
+            padding-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="mainPage">
+        <div class="headBox">
+            <div class="head-left fl">
+                <div class="head-logo fl">
+                    <img src="../img/img_blackstage_logo.png" class="fl" alt="">
+                </div>
+                <div class="head-name fl">预约诊疗服务平台管理</div>
+            </div>
+            <div class="head-right fr">
+                <!--入驻-->
+                <div class="settled fl cursorP"></div>
+                <!--头像-->
+                <div class="userIcon fl">
+                    <i class="iconfont">&#xe60a;</i>
+                </div>
+                <!--用户名-->
+                <div class="userBox fl">
+                    <div class="userName cursorP">
+                        <span id="username"></span>
+                        <i class="iconfont">&#xe65a;</i>
+                        <ul class="user-ul">
+                            <li class="changePassword">修改密码</li>
+                            <li class="logout">退出登录</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="bodyBox">
+            <div class="leftMenu">
+                <div class="menubox">
+                    <!--安全起见，根据登陆动态加载菜单-->
+                    <ul class="weijianwei"></ul>
+                    <ul class="yiyuan"></ul>
+                </div>
+            </div>
+            <div class="rightCont">
+                <iframe id="mainIframe" allowTransparency="true" frameborder="no" border="0" src="appointCharts.html"></iframe>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../js/page/index.js"></script>
+</html>

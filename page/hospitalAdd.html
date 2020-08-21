@@ -1,0 +1,77 @@
+<!--friendLink.html 友情链接-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/page/commen.js"></script>
+    <style>
+        .viewDetail .layui-form-label{
+            width: 100px;
+            text-align: left;
+        }
+        .viewDetail .layui-form-item{
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="pageBox">
+        <form class="layui-form viewDetail" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">医疗机构名称：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="nickname" lay-verify="required" autocomplete="off" class="layui-input" placeholder="必填" style="width: 400px;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">系统用户名：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="username" lay-verify="required" autocomplete="off" class="layui-input" placeholder="必填" style="width: 400px;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">登录密码：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="password" lay-verify="required" autocomplete="off" class="layui-input" placeholder="必填" style="width: 400px;">
+                </div>
+            </div>
+        </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="save">保存</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+    </form>
+</div>
+</body>
+<script type="text/javascript" >
+    $(function () {
+        layui.use(['table', 'layer'], function() {
+            var form = layui.form;
+            var layer = layui.layer;
+            //监听工具条
+            form.on('submit(save)', function(data){
+                var jsonParam = {
+                    username: data.field.username,
+                    nickname: data.field.nickname,
+                    password: data.field.password,
+                };
+                getAjax('/reg/user/saveUserInfo', jsonParam, function (resultMsg) {
+                    layer.open({
+                        title:'提示',
+                        icon:1,
+                        content:'保存成功',
+                        yes(){
+                            window.location.href = 'registeredHospital.html';
+                        }
+                    });
+                });
+                return false; //很重要的一句话，不能删
+            });
+        })
+    })
+</script>
+</html>

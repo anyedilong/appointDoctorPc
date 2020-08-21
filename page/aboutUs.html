@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="../js/page/commen.js"></script>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <script type="text/javascript" charset="utf-8" src="../../baiduUEditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../../baiduUEditor/ueditor.all.min.js"> </script>
+    <script type="text/javascript" charset="utf-8" src="../../baiduUEditor/lang/zh-cn/zh-cn.js"></script>
+    <style>
+        .layui-form-item{
+            margin-bottom: 20px;
+            width: 50%;
+        }
+         .viewDetail .layui-form-label{
+             width: 100px;
+             text-align: left;
+         }
+    </style>
+</head>
+<body>
+    <div class="pageBox showLoading">
+        <div class="data-card">
+            <form class="layui-form viewDetail" action="" lay-filter="myForm">
+                <div class="">
+                    <!-- 百度富文本框start -->
+		            <script id="editor" type="text/plain" style="width:1024px;height:500px;"></script>
+		            <script type="text/javascript">
+		            	var ue = UE.getEditor('editor', {
+			                toolbars: [
+			                    [
+			                        'undo', //撤销
+			                        'bold', //加粗
+			                        'underline', //下划线
+			                        'preview', //预览
+			                        'horizontal', //分隔线
+			                        'inserttitle', //插入标题
+			                        'cleardoc', //清空文档
+			                        'fontfamily', //字体
+			                        'fontsize', //字号
+			                        'paragraph', //段落格式
+			                        'simpleupload', //单图上传
+			                        'insertimage', //多图上传
+			                        'inserttable', //插入表格
+			                        'justifyleft', //居左对齐
+			                        'justifyright', //居右对齐
+			                        'justifycenter', //居中对
+			                        'justifyjustify', //两端对齐
+			                        'forecolor', //字体颜色
+			                        'fullscreen', //全屏
+			                        'edittip ', //编辑提示
+			                        'customstyle', //自定义标题
+			                         ]
+			                    ]
+			                });
+		            	// 获取值
+		            	function getContent() {
+		                	return UE.getEditor('editor').getContent();
+		                }
+		            	
+		            	// 设置值
+		                function setContent(content) {
+		            		$("#content").html(content);
+		            		try {
+		                   		UE.getEditor('editor').setContent($("#content").html());
+		            		} catch (err) {
+		            			console.log("editor加载中");
+		            		}
+		                }
+		            	
+		            	// editor就绪函数
+		            	ue.ready(function() {
+		            		UE.getEditor('editor').setContent($("#content").html());
+		            	})
+		            </script>
+		       		<div id="content" style="display:none"></div>
+		        	<!-- 百度富文本框end -->
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="submit" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="save">保存</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        $(function () {
+        	var id = "";
+            layui.use(['form'], function(){
+               $(".showLoading").css("opacity",'1')
+                var form = layui.form;
+                getAjax('/reg/sysAboutUs/getAboutInfo', '', function (resultMsg) {
+                	id = resultMsg.data[0].id;
+					setContent(resultMsg.data[0].content);
+                });
+                form.on('submit(save)', function (data) {
+                   layui.layer.load();
+                   $(".showLoading").css("opacity",'0.1')
+                    var jsonParam = {
+                        id: id,
+                        content: getContent()
+                    };
+                    getAjax('/addOrUpdateAboutInfo', jsonParam, function (resultMsg) {
+                       layui.layer.closeAll()
+                       $(".showLoading").css("opacity",'1')
+                        var layerOne = layer.open({
+                            title:'提示',
+                            icon:1,
+                            content:'保存成功',
+                            yes(){
+                                layer.close(layerOne);
+                            }
+                        });
+                    });
+                    return false;
+                });
+            })
+           	
+           	$(".layui-btn-primary").click(function(){
+           		setContent("");
+           	});
+        })
+    </script>
+</body>
+</html>

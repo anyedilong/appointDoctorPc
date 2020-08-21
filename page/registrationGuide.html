@@ -1,0 +1,271 @@
+<!--挂号指南列表-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/page/commen.js"></script>
+    <style>
+        .layui_box{
+            margin: 0 10px;
+        }
+        #details{
+            display: none; width: 1100px;
+        }
+        .layui-layer.layui-layer-page{
+            width: auto !important;
+        }
+        .toEidt{
+            margin: 20px;
+        }
+        .toEidt .layui-form-item{
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="pageBox showLoading">
+    <form class="layui-form" action="">
+        <div class="layui-inline">
+            <label class="layui-form-label">日期范围</label>
+            <div class="layui-input-inline">
+                <input type="text" name="start_time" class="layui-input" id="start_time"
+                       placeholder="开始时间" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-inline layui_box">
+            <label class="layui-form-label">至</label>
+            <div class="layui-input-inline">
+                <input type="text" name="end_time" class="layui-input" id="end_time"
+                       placeholder="结束时间" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="search">查询</button>
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="settled">发表挂号指南</button>
+        </div>
+    </form>
+    <div class="data-card charts_box">
+        <table class="layui-hide" id="table"  lay-filter="complainList"></table>
+        <script type="text/html" id="barDemo">
+            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+            <a class="layui-btn layui-btn-xs btn_reset" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        </script>
+        <div id="laypage"></div>
+    </div>
+</div>
+
+<script type="text/javascript" >
+    $(function () {
+        layui.use([ 'table','laydate','laypage'], function() {
+           layui.layer.load();
+            var $ = layui.$;
+            var form = layui.form
+            var table = layui.table;
+            var laydate = layui.laydate;
+            var laypage = layui.laypage;
+
+            form.on('submit(settled)', function(data){
+                window.location.href = 'registrationGuidePublish.html'
+                return false;
+            });
+
+            var start = laydate.render({
+                elem: '#start_time'
+                ,theme: '#217BFA'
+                // type: 'datetime',
+                // max: nowTime,
+                ,btns: ['clear', 'confirm'],
+                done: function (value, date) {
+                    endMax = end.config.max;
+                    end.config.min = date;
+                    end.config.min.month = date.month - 1;
+                }
+            });
+            var end = laydate.render({
+                elem: '#end_time'
+                ,theme: '#217BFA'
+                // type: 'datetime',
+                // max: nowTime,
+                ,done: function (value, date) {
+                    if ($.trim(value) == '') {
+                        var curDate = new Date();
+                        date = {'date': curDate.getDate(), 'month': curDate.getMonth() + 1, 'year': curDate.getFullYear()};
+                    }
+                    start.config.max = date;
+                    start.config.max.month = date.month - 1;
+                }
+            })
+
+            // table.render({
+            //     elem: '#test'
+            //     // ,url:'http://192.168.1.81:8082/reg/hospital/getHospitalPage'
+            //     ,cellMinWidth: 80
+            //     ,cols: [[
+            //         {field:'time', title: '发表时间',minWidth:200}
+            //         ,{field:'title', title: '健康科普标题',minWidth:100}
+            //         ,{field:'content', title: '健康科普内容',minWidth:200}
+            //         ,{fixed: 'right', title:'管理', toolbar: '#barDemo',minWidth:100}
+            //     ]]
+            //     ,data: [{
+            //         "time": "2016-10-14"
+            //         ,"title": "标题"
+            //         ,"content": "健康科普内容内容"
+            //     },{
+            //         "time": "2016-10-14"
+            //         ,"title": "标题"
+            //         ,"content": "健康科普内容内容"
+            //     },{
+            //         "time": "2016-10-14"
+            //         ,"title": "标题"
+            //         ,"content": "健康科普内容内容"
+            //     },{
+            //         "time": "2016-10-14"
+            //         ,"title": "标题"
+            //         ,"content": "健康科普内容内容"
+            //     },{
+            //         "time": "2016-10-14"
+            //         ,"title": "标题"
+            //         ,"content": "健康科普内容内容"
+            //     },{
+            //         "time": "2016-10-14"
+            //         ,"title": "标题"
+            //         ,"content": "健康科普内容内容"
+            //     },{
+            //         "time": "2016-10-14"
+            //         ,"title": "标题"
+            //         ,"content": "健康科普内容内容"
+            //     },{
+            //         "time": "2016-10-14"
+            //         ,"title": "标题"
+            //         ,"content": "健康科普内容内容"
+            //     }]
+            //
+            //     ,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+            //         // ,limits: [5, 7, 10]
+            //         limit: 5 //每页默认显示的数量
+            //         ,theme: '#1E9FFF'
+            //     }
+            // });
+            var tableobj = {
+                elem: '#table'
+                ,cellMinWidth: 80
+                ,cols: [[
+                    {field:'updateTime', title: '发表时间',minWidth:100}
+                    ,{field:'title', title: '标题',minWidth:200}
+                    ,{field:'classificationName', title: '类别',minWidth:300}
+                    ,{fixed: 'right', title: '管理',toolbar: '#barDemo',minWidth:100}
+                ]]
+                ,data: []
+            };
+            var pageobj = {
+                elem: 'laypage',
+                count: 0, //数据总数
+                limit: 10,  //得到每页显示的条数
+                curr: 1,  //得到当前页，以便向服务端请求对应页的数据。
+                layout: ['count', 'prev', 'page', 'next']
+            };
+            var jsonParam = {
+                startTime: '', // 起始时间
+                endTime: '', // 结束时间
+                pageNo: '1', // 起始页， 默认10
+                pageSize: '10', // 页大小， 默认10
+                status:'',
+                id : ''
+            };
+            //监听工具条
+            table.on('tool(complainList)', function(obj){
+                var datas = obj.data;
+                if(obj.event === 'detail'){
+                    // layer.msg('ID：'+ data.id + ' 的查看操作');
+                    $("#readO").attr("readOnly",true).val(datas.title);
+                    $("#readS").attr("readOnly",true).val(datas.subtitle);
+                    $(".get-content").html(datas.content)
+                    layer.open({
+                        type: 1,
+                        content: $('#details') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+                    });
+                } else if(obj.event === 'del'){
+                    layer.confirm('是否删除该文章', function(index){
+                       layui.layer.load();
+                        var jsonParams = {
+                            id : datas.id,
+                        }
+                        getAjax('/reg/regguide/deleteGuideInfo', jsonParams, function (resultMsg) {
+                            // tableobj.data = resultMsg.data.list;
+                            // pageobj.count = resultMsg.data.count;
+                            // table.render(tableobj);
+                            // laypage.render(pageobj);
+                            if(resultMsg.retCode == 0){
+                                layer.closeAll();
+                                layer.msg('已删除')
+                                getList(jsonParam);
+                            }else{
+                                layer.msg('删除失败，请重试')
+                            }
+                           layui.layer.closeAll()
+                           $(".showLoading").css("opacity",'1')
+                        });
+                    });
+                } else if(obj.event === 'edit'){
+                    window.location.href = "registrationGuidePublish.html?id="+datas.id
+                }
+            });
+
+            function getList (jsonParam) {
+                getAjax('/reg/regguide/getGuideListPaging', jsonParam, function (resultMsg) {
+                   layui.layer.closeAll()
+                   $(".showLoading").css("opacity",'1')
+                    tableobj.data = resultMsg.data.list;
+                    pageobj.count = resultMsg.data.count;
+                    table.render(tableobj);
+                    laypage.render(pageobj);
+                });
+            }
+            form.on('submit(search)', function (data) {
+                jsonParam.startTime = data.field.start_time;
+                jsonParam.endTime = data.field.end_time;
+                getList(jsonParam);
+                return false;
+            });
+            getList(jsonParam);
+            pageobj.jump = function (obj) {
+               layui.layer.load();
+                jsonParam.pageSize = obj.limit;
+                jsonParam.pageNo = obj.curr;
+                getAjax('/reg/regguide/getGuideListPaging', jsonParam, function (resultMsg) {
+                   layui.layer.closeAll()
+                   $(".showLoading").css("opacity",'1')
+                    tableobj.data = resultMsg.data.list;
+                    table.render(tableobj);
+                });
+            };
+            laypage.render(pageobj);
+        })
+    })
+</script>
+</body>
+<div id="details">
+    <form class="layui-form toEidt">
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input type="text" name="title"  placeholder="请输入" autocomplete="off" class="layui-input" id="readO">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">副标题</label>
+            <div class="layui-input-block">
+                <input type="text" name="title"  placeholder="请输入" autocomplete="off" class="layui-input" id="readS">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">内容</label>
+            <div class="layui-input-block get-content">
+                <!--<textarea placeholder="请输入内容" name="content" class="layui-textarea" id="readT"></textarea>-->
+            </div>
+        </div>
+    </form>
+</div>
+</html>

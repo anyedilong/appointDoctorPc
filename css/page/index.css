@@ -1,0 +1,132 @@
+html, body {
+    height: 100vh;
+    width: 100vw;
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    overflow: hidden;
+}
+.mainPage {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background: #F2F6FA;
+    color: #323231;
+}
+.headBox {
+    width: 100%;
+    height: 70px;
+    line-height: 70px;
+    background: #217BFA;
+    color: #FFFFFF;
+    position: relative;
+}
+.head-logo, .head-name {
+    position: absolute;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+    transform: translateY(-50%);
+    top: 50%;
+}
+.head-logo {
+    left: 20px;
+    width: 38px;
+    height: 38px;
+    display: inline-block;
+    border-radius: 50%;
+    overflow: hidden;
+}
+.head-logo img {
+    width: 100%;
+    height: 100%;
+}
+.head-name {
+    left: 68px;
+    font-size: 22px;
+}
+.settled, .userIcon {
+    font-size: 30px;
+    margin-left: 20px;
+}
+.userBox {
+    margin: 0 20px 0 10px;
+    font-size: 14px;
+}
+.userName {
+    position: relative;
+}
+.userName:hover .user-ul {
+    display: block;
+}
+.user-ul {
+    display: none;
+    position: absolute;
+    top: 69px;
+    right: 0;
+    background: #FFFFFF;
+    border: 1px solid #217BFA;
+    color: #217BFA;
+    line-height: 36px;
+    z-index: 100;
+    padding: 5px 0;
+}
+.user-ul li {
+    width: 100px;
+    text-align: center;
+    cursor: pointer;
+}
+.user-ul li:hover {
+    background: #217BFA;
+    color: #FFFFFF;
+}
+.bodyBox {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 70px);
+}
+.leftMenu {
+    position: absolute;
+    left: 0;
+    width: 220px;
+    height: 100%;
+    background: #0C213E;
+    color: #A3A8AE;
+}
+.rightCont {
+    position: absolute;
+    right: 0;
+    left: 220px;
+    width: calc(100% - 220px);
+    height: 100%;
+}
+#mainIframe {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+.menuUl {
+    padding-top: 30px;
+}
+.menuLi {
+    height: 36px;
+    line-height: 36px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    border-left: 3px solid #0C213E;
+    background: none;
+    text-indent: 32px;
+    cursor: pointer;
+}
+.menuLi-act {
+    border-left: 3px solid #217BFA;
+    background: #112D52;
+    color: #217BFA;
+}
+.layui-layer-login .layui-layer-title {
+    background: none;
+    border: none;
+}
+.layui-layer-login.layui-layer {
+    border-radius: 10px !important;
+    margin-top: -20px;
+}

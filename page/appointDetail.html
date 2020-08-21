@@ -1,0 +1,132 @@
+<!--appointDetail.html 医疗机构预约统计+居民预约统计页面 顶部四个数据详情-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/page/commen.js"></script>
+</head>
+<body>
+    <div class="pageBox">
+        <!--<div class="page-tit com-tit blueblack">本年度预约统计</div>-->
+        <div class="data-card charts_box" style="margin-top: 0px;">
+            <div class="com-tit blueblack"></div>
+            <div class="charts" id="barcharts"></div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" >
+    $(function () {
+        var pageType = GetQueryString('pageType');
+        var status = '';
+        if (pageType == '0') {
+            $('.com-tit').html('本年度预约统计');
+            status = 1;
+        }else if (pageType == '1') {
+            $('.com-tit').html('本年度就诊统计');
+            status = 2;
+        }else if (pageType == '2') {
+            $('.com-tit').html('本年度取消统计');
+            status = 4;
+        }else if (pageType == '3') {
+            $('.com-tit').html('本年度过期统计');
+            status = 3;
+        }
+        var xdata = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+        var barcharts = echarts.init(document.getElementById('barcharts'));
+        getAjax('/reg/reservationStatistics/reservationStatisticsEvery', {status: status}, function (resultMsg) {
+            // (1.未就诊 2.已就诊 3.已过期 4.已取消)
+            var datas = [];
+            // for (var key in resultMsg.data) {
+            //     datas.unshift(resultMsg.data[key]);
+            //     // console.log(key)
+            // }
+            datas.push(resultMsg.data.MONTH1);
+            datas.push(resultMsg.data.MONTH2);
+            datas.push(resultMsg.data.MONTH3);
+            datas.push(resultMsg.data.MONTH4);
+            datas.push(resultMsg.data.MONTH5);
+            datas.push(resultMsg.data.MONTH6);
+            datas.push(resultMsg.data.MONTH7);
+            datas.push(resultMsg.data.MONTH8);
+            datas.push(resultMsg.data.MONTH9);
+            datas.push(resultMsg.data.MONTH10);
+            datas.push(resultMsg.data.MONTH11);
+            datas.push(resultMsg.data.MONTH12);
+            var baroption = chartOpt(xdata, datas);
+            barcharts.setOption(baroption);
+        });
+        function chartOpt(xdata, data) {
+            var baroption = {
+                xAxis: {
+                    type: 'category',
+                    data: xdata,
+                    axisLine: {
+                        lineStyle: {
+                            type: 'solid',
+                            color: '#F2F6FA',
+                            width: '1'//坐标线的宽度
+                        }
+                    },
+                    axisLabel: {
+                        textStyle: {
+                            color: '#A3A8AE'
+                        }
+                    },
+                },
+                yAxis: {
+                    minInterval: 1,
+                    type: 'value',
+                    axisLine: {
+                        lineStyle: {
+                            type: 'solid',
+                            color: 'none',//左边线的颜色
+                            width: '1'//坐标线的宽度
+                        }
+                    },
+                    axisLabel: {
+                        textStyle: {
+                            color: '#A3A8AE'
+                        }
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: ['#F2F6FA']
+                        }
+
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                color: ['#37C7D8'],
+                legend: {
+                    // data: legendData,
+                    x: 'right', y: 'top',
+                    textStyle: {color: '#C0C3C7', fontSize: 12},
+                    itemWidth: 12,
+                    itemHeight: 12,
+                },
+                series: {
+                    data: data,
+                    type: 'bar',
+                    barWidth: 30
+                },
+                tooltip : {
+                    trigger: 'axis',
+                    axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                        type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                    }
+                }
+            };
+            return baroption;
+        }
+        window.addEventListener('resize',function() {
+            barcharts.resize();
+        });
+    })
+</script>
+</html>

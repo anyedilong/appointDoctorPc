@@ -1,0 +1,150 @@
+<!--appointCharts.html 医疗机构预约统计+居民预约统计页面-->
+<!--首页图表数据页-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>预约统计</title>
+    <script src="../js/page/commen.js"></script>
+    <style>
+        .data-card {
+            behavior: url(../js/PIE/PIE.htc);
+            position: relative;
+        }
+        .page-tit {
+            margin-bottom: 20px;
+        }
+        .data-card {
+            background: #FFFFFF;
+            padding: 20px;
+            color: #A3A8AE;
+            font-size: 14px;
+            border-radius: 8px;
+        }
+        .dataCard-tit {
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .dataCard-icon {
+            text-align: center;
+        }
+        .big-icon {
+            font-size: 40px;
+        }
+        .big-num {
+            font-size: 30px;
+        }
+        .chart-box {
+            width: 100%;
+        }
+        .chart-box .layui-col-md4 {
+            height: 100%;
+        }
+        .pie-box {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="pageBox showLoading">
+        <div class="page-tit com-tit blueblack">本年度预约统计</div>
+        <div class="layui-row layui-col-space20">
+            <div class="layui-col-md3 layui-col-sm6">
+                <div class="data-card cursorP num-card">
+                    <div class="dataCard-tit">预约人数</div>
+                    <div class="dataCard-con">
+                        <div class="fl dataCard-icon">
+                            <i class="iconfont big-icon m-blue">&#xe608;</i>
+                        </div>
+                        <div class="fr dataCard-num">
+                            <span class="big-num blueblack" id="STATUS1"></span>人
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md3 layui-col-sm6">
+                <div class="data-card cursorP num-card">
+                    <div class="dataCard-tit">就诊人数</div>
+                    <div class="dataCard-con">
+                        <div class="fl dataCard-icon">
+                            <i class="iconfont big-icon m-green">&#xe605;</i>
+                        </div>
+                        <div class="fr dataCard-num">
+                            <span class="big-num blueblack" id="STATUS2"></span>人
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md3 layui-col-sm6">
+                <div class="data-card cursorP num-card">
+                    <div class="dataCard-tit">取消人数</div>
+                    <div class="dataCard-con">
+                        <div class="fl dataCard-icon">
+                            <i class="iconfont big-icon m-orange">&#xe603;</i>
+                        </div>
+                        <div class="fr dataCard-num">
+                            <span class="big-num blueblack" id="STATUS4"></span>人
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md3 layui-col-sm6">
+                <div class="data-card cursorP num-card">
+                    <div class="dataCard-tit">过期人数</div>
+                    <div class="dataCard-con">
+                        <div class="fl dataCard-icon">
+                            <i class="iconfont big-icon m-red">&#xe604;</i>
+                        </div>
+                        <div class="fr dataCard-num">
+                            <span class="big-num blueblack" id="STATUS3"></span>人
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row layui-col-space20">
+            <div class="layui-col-md6">
+                <div class="data-card chart-card">
+                    <div class="com-tit blueblack">近期就诊率统计</div>
+                    <div class="chart-box layui-row">
+                        <div class="layui-col-md4 layui-col-sm4 layui-col-xs4">
+                            <div class="pie-box" id="bzpie"></div>
+                        </div>
+                        <div class="layui-col-md4 layui-col-sm4 layui-col-xs4">
+                            <div class="pie-box" id="bypie"></div>
+                        </div>
+                        <div class="layui-col-md4 layui-col-sm4 layui-col-xs4">
+                            <div class="pie-box" id="bnpie"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="data-card chart-card">
+                    <div class="com-tit blueblack">月度居民就诊趋势</div>
+                    <div id="jzqushi" class="chart-box"></div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row layui-col-space20">
+            <div class="layui-col-md6">
+                <div class="data-card chart-card">
+                    <div class="com-tit blueblack">预约同比分析</div>
+                    <div id="yuyue" class="chart-box"></div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="data-card chart-card">
+                    <div class="com-tit blueblack">就诊同比分析</div>
+                    <div id="jiuzhen" class="chart-box"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../js/page/appointCharts.js"></script>
+</html>

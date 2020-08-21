@@ -1,0 +1,246 @@
+<!--注册医院-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/page/commen.js"></script>
+    <style>
+        .layui_box{
+            margin: 0 10px;
+        }
+        .layui-layer-add.layui-layer {
+            behavior: url(../js/PIE/PIE.htc);
+            position: relative;
+        }
+        .layui-layer-add .layui-layer-title {
+            background: none;
+            border: none;
+        }
+        .layui-layer-add.layui-layer {
+            border-radius: 10px !important;
+            margin-top: -20px;
+        }
+        #resetPwd {
+            display: none;
+            padding: 40px 0;
+        }
+        #resetPwd .layui-form-item {
+            margin-bottom: 15px;
+        }
+        #resetPwd .layui-btn-primary:hover {
+            border-color: #217BFA;
+            color: #217BFA;
+        }
+    </style>
+</head>
+<body>
+<div class="pageBox showLoading">
+    <form class="layui-form" action="">
+        <div class="layui-inline">
+            <label class="layui-form-label">日期范围</label>
+            <div class="layui-input-inline">
+                <input type="text" name="startTime" class="layui-input" id="start_time"
+                       placeholder="开始时间">
+            </div>
+        </div>
+        <div class="layui-inline layui_box">
+            <label class="layui-form-label">至</label>
+            <div class="layui-input-inline">
+                <input type="text" name="endTime" class="layui-input" id="end_time"
+                       placeholder="结束时间">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="search">查询</button>
+            <div class="layui-btn layui-btn-normal" lay-submit lay-filter="settled">新建</div>
+        </div>
+    </form>
+    <div class="data-card charts_box">
+        <table class="layui-hide" id="table"  lay-filter="complainList"></table>
+        <script type="text/html" id="barDemo">
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="reset">重置密码</a>
+        </script>
+        <div id="laypage"></div>
+    </div>
+    <div id="resetPwd">
+        <div class="layui-col-md8 layui-col-md-offset2">
+            <form class="layui-form" action="">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">操作员</label>
+                    <div class="layui-input-block" id="operator" style="line-height: 36px;">
+
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">新密码</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="newPwd" lay-verify="required" id="newPwd" autocomplete="off" placeholder="必填" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">确认密码</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="newPwd2" lay-verify="required" id="newPwd2" autocomplete="off" placeholder="必填" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item form-btn layui-row layui-col-space20">
+                    <div class="layui-col-md6">
+                        <button type="button" class="add-close layui-btn layui-btn-primary fr">关闭</button>
+                    </div>
+                    <div class="layui-col-md6">
+                        <button type="button" lay-submit lay-filter="save" class="layui-btn layui-btn-normal fl">确定</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" >
+    $(function () {
+        layui.use([ 'table','laydate', 'laypage'], function() {
+           layui.layer.load();
+            var $ = layui.$;
+            var form = layui.form;
+            var table = layui.table;
+            var laydate = layui.laydate;
+            var laypage = layui.laypage;
+            var start = laydate.render({
+                elem: '#start_time'
+                ,theme: '#217BFA'
+                ,btns: ['clear', 'confirm'],
+                done: function (value, date) {
+                    endMax = end.config.max;
+                    end.config.min = date;
+                    end.config.min.month = date.month - 1;
+                }
+            });
+            var end = laydate.render({
+                elem: '#end_time'
+                ,theme: '#217BFA'
+                ,done: function (value, date) {
+                    if ($.trim(value) == '') {
+                        var curDate = new Date();
+                        date = {'date': curDate.getDate(), 'month': curDate.getMonth() + 1, 'year': curDate.getFullYear()};
+                    }
+                    start.config.max = date;
+                    start.config.max.month = date.month - 1;
+                }
+            });
+            var tableobj = {
+                elem: '#table',
+                cellMinWidth: 80,
+                cols: [[
+                    {field:'nickname', title: '医疗机构名称',minWidth:300},
+                    {field:'username', title: '用户名',minWidth:300}
+                    ,{field:'optionName', title: '操作员',minWidth:300}
+                    ,{fixed: 'right', title:'管理', toolbar: '#barDemo',width:200}
+                ]],
+                data: []
+            };
+            var pageobj = {
+                elem: 'laypage',
+                count: 0, //数据总数
+                limit: 10,  //得到每页显示的条数
+                curr: 1,  //得到当前页，以便向服务端请求对应页的数据。
+                layout: ['count', 'prev', 'page', 'next']
+            };
+            var jsonParam = {
+                startDate: '', // 起始时间
+                endDate: '', // 结束时间
+                pageNo: '1', // 起始页， 不传默认10， 不能为“”
+                pageSize: '10' // 页大小， 不传默认10， 不能为“”
+            };
+            function getList (jsonParam) {
+                getAjax('/reg/user/getUserList', jsonParam, function (resultMsg) {
+                   layui.layer.closeAll()
+                   $(".showLoading").css("opacity",'1')
+                    tableobj.data = resultMsg.data.list;
+                    pageobj.count = resultMsg.data.count;
+                    table.render(tableobj);
+                    laypage.render(pageobj);
+                });
+            }
+            form.on('submit(search)', function (data) {
+                jsonParam.startDate = data.field.startTime;
+                jsonParam.endDate = data.field.endTime;
+                getList(jsonParam);
+                return false; //很重要的一句话，不能删
+            });
+            getList(jsonParam);
+            pageobj.jump = function (obj) {
+               layui.layer.load();
+               jsonParam.pageSize = obj.limit;
+                jsonParam.pageNo = obj.curr;
+                getAjax('/reg/user/getUserList', jsonParam, function (resultMsg) {
+                   layui.layer.closeAll()
+                   $(".showLoading").css("opacity",'1')
+                    tableobj.data = resultMsg.data.list;
+                    table.render(tableobj);
+                });
+            };
+            laypage.render(pageobj);
+            //监听工具条
+            table.on('tool(complainList)', function(obj){
+                var data = obj.data;
+                $('#operator').html(data.optionName);
+                var id = data.id;
+                if(obj.event === 'reset'){
+                    var layerOne = layer.open({
+                        type: 1,
+                        title:'重置密码',
+                        area: '560px',
+                        skin: 'layui-layer-add', //样式类名
+                        shadeClose: true,
+                        shade: 0.2,
+                        content: $('#resetPwd'),
+                        fixed: false,
+                        top: 5
+                    });
+                    //监听提交
+                    form.on('submit(save)', function(data){
+                       layui.layer.load();
+                        if(data.field.newPwd !== data.field.newPwd2){
+                            layer.msg('密码不一致',{
+                                icon:5,
+                                time:1000,
+                                anim:6
+                            })
+                        }else{
+                            var jsonParam = {
+                                id: id,
+                                password: data.field.newPwd,
+                            };
+                            getAjax('/reg/user/updatePwd',jsonParam,function (resultMsg) {
+                               layui.layer.closeAll()
+                               $(".showLoading").css("opacity",'1')
+                                layer.open({
+                                    title:'提示',
+                                    icon:1,
+                                    content:'保存成功'
+                                });
+                                layer.close(layerOne);
+                                $('#newPwd').val('');
+                                $('#newPwd2').val('');
+                            });
+                        }
+                        return false;
+                    });
+                    $('.add-close').click(function () {
+                        layer.close(layerOne);
+                        $('#newPwd').val('');
+                        $('#newPwd2').val('');
+                    });
+                    return false; //很重要的一句话，不能删
+                }
+            });
+            form.on('submit(settled)', function(){
+                window.location.href = 'hospitalAdd.html';
+                return false;
+            });
+        })
+    })
+</script>
+</body>
+</html>

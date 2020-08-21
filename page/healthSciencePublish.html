@@ -1,0 +1,229 @@
+<!--发表健康科普-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/page/commen.js"></script>
+    <script src="../js/base64.js"></script>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <script type="text/javascript" charset="utf-8" src="../../baiduUEditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../../baiduUEditor/ueditor.all.min.js"> </script>
+    <script type="text/javascript" charset="utf-8" src="../../baiduUEditor/lang/zh-cn/zh-cn.js"></script>
+    <style>
+        .layui-form-item{
+            margin-bottom: 20px;
+            width: 50%;
+        }
+        .layui-upload-drag{
+            width: 80px; height: 80px;
+            text-align: center; line-height: 80px;
+        }
+        .icon-icon-test{
+            font-size: 50px;
+        }
+        .charts_box{
+            margin-bottom: 30px;
+        }
+        .save{
+            background: #217BFA;
+        }
+        .layui-btn-primary:hover{
+            border-color: #217BFA;
+        }
+        #pic{
+            width:150px;
+            height:150px;
+            cursor: pointer;
+        }
+        .data-card{
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+<div class="pageBox">
+    <div class="data-card">
+        <form class="layui-form" action="" id="userForm">
+            <div class="layui-form-item">
+                <label class="layui-form-label">标题：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" lay-verify="required" lay-reqtext="必填项" autocomplete="off" placeholder="请输入标题" class="layui-input title">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">副标题：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="subtitle" lay-verify="required" lay-reqtext="必填项" placeholder="请输入副标题" autocomplete="off" class="layui-input subtitle">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">封面：</label>
+                <div class="layui-input-block">
+                    <img id="pic" src="../img/upload_bg.png" >
+                    <input id="upload1" name="file" onchange="PreviewImage(this, '#pic', 'img')" accept="image/*" type="file" style="display: none"/>
+                </div>
+            </div>
+            <div class="data-card charts_box">
+        	<!-- 百度富文本框start -->
+            <script id="editor" type="text/plain" style="width:1024px;height:500px;"></script>
+            <script type="text/javascript">
+            	var ue = UE.getEditor('editor', {
+	                toolbars: [
+	                    [
+	                        'undo', //撤销
+	                        'bold', //加粗
+	                        'underline', //下划线
+	                        'preview', //预览
+	                        'horizontal', //分隔线
+	                        'inserttitle', //插入标题
+	                        'cleardoc', //清空文档
+	                        'fontfamily', //字体
+	                        'fontsize', //字号
+	                        'paragraph', //段落格式
+	                        'simpleupload', //单图上传
+	                        'insertimage', //多图上传
+	                        'inserttable', //插入表格
+	                        'justifyleft', //居左对齐
+	                        'justifyright', //居右对齐
+	                        'justifycenter', //居中对
+	                        'justifyjustify', //两端对齐
+	                        'forecolor', //字体颜色
+	                        'fullscreen', //全屏
+	                        'edittip ', //编辑提示
+	                        'customstyle', //自定义标题
+	                         ]
+	                    ]
+	                });
+            	// 获取值
+            	function getContent() {
+                	return UE.getEditor('editor').getContent();
+                }
+            	
+            	// 设置值
+                function setContent(content) {
+            		$("#content").html(content);
+            		try {
+                   		UE.getEditor('editor').setContent($("#content").html());
+            		} catch (err) {
+            			console.log("editor加载中");
+            		}
+                }
+            	
+            	// editor就绪函数
+            	ue.ready(function() {
+            		UE.getEditor('editor').setContent($("#content").html());
+            	})
+            </script>
+       		<div id="content" style="display:none"></div>
+        	<!-- 百度富文本框end -->
+        	</div>
+            <div class="layui-form-item">
+                <div class="layui-input-block" id="hospital">
+                    <button type="submit" class="layui-btn save" lay-submit="" lay-filter="save" id="toSave">保存</button>
+                    <button type="submit" class="layui-btn save" lay-submit="" lay-filter="shen">提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary reset_btn">重置</button>
+                </div>
+                <!--<div class="layui-input-block" id="wei">-->
+                    <!--<button type="submit" class="layui-btn save" lay-submit="" lay-filter="shen">保存</button>-->
+                    <!--<button type="submit" class="layui-btn save" lay-submit="" lay-filter="shen">提交</button>-->
+                    <!--<button type="reset" class="layui-btn layui-btn-primary reset_btn">重置</button>-->
+                <!--</div>-->
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript" >
+    $(function () {
+        // var roleName = localStorage.getItem("roleName")
+        // if(roleName === '普通用户'){
+        //     $("#hospital").show().siblings().hide()
+        // }else if(roleName === '管理员'){
+        //     $("#wei").show().siblings().hide()
+        // }
+        // 从列表的id编辑和状态
+        function getUrlParam(key) {
+            var url = window.location.search;
+            var reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)");
+            var result = url.substr(1).match(reg);
+            return result ? decodeURIComponent(result[2]) : null;
+        }
+        var id_detail = getUrlParam("id")
+        var status = getUrlParam("status")
+        if(status === '2' || status === '3' || status === '4'){
+            $("#toSave").hide()
+        }
+        if(id_detail !=null && id_detail.toString().length>1){
+            var jsonParams = {
+                id : id_detail
+            }
+            getAjax('/reg/healthEducateInfo/getHealthEducateInfo', jsonParams, function (resultMsg) {
+                if(resultMsg.retCode == 0){
+                    $(".title").val(resultMsg.data.title)
+                    $(".subtitle").val(resultMsg.data.subtitle)
+                    $("#pic").attr("src",resultMsg.data.imageUrl)
+					setContent(resultMsg.data.content);
+                }
+            });
+        }
+
+        $("#pic").click(function () {
+            $("#upload1").click();
+        });
+        layui.use(['form', 'layedit', 'laydate'], function(){
+            var $ = layui.jquery
+                ,form = layui.form
+                ,layer = layui.layer
+
+            // 发表审核健康科普
+            form.on('submit(shen)', function (data) {
+                var jsonParam = {
+                    id: id_detail,
+                    title : data.field.title,
+                    subtitle : data.field.subtitle,
+                    imageUrl : $('#pic').attr('src'),
+                    content: getContent()
+                }
+                getAjax('/reg/healthEducateInfo/addOrUpdateHealthEducateInfo', jsonParam, function (resultMsg) {
+                    if(resultMsg.retCode == 0){
+                        layer.msg('提交保存成功')
+                        setTimeout(function () {
+                            window.location.href = 'healthScience.html'
+                        },2000)
+                    }else{
+                        layer.msg(resultMsg.retMsg)
+                    }
+                });
+                return false;
+            });
+            // 保存下次继续编辑
+            form.on('submit(save)', function (data) {
+                var jsonParam = {
+                    id: id_detail,
+                    title : data.field.title,
+                    subtitle : data.field.subtitle,
+                    imageUrl : $('#pic').attr('src'),
+                    content: getContent()
+                }
+                getAjax('/reg/healthEducateInfo/saveHealthEducateInfo', jsonParam, function (resultMsg) {
+                    if(resultMsg.retCode == 0){
+                        layer.msg('保存成功')
+                        setTimeout(function () {
+                            window.location.href = 'healthScience.html'
+                        },2000)
+                    }else{
+                        layer.msg('保存失败，请重试')
+                    }
+                });
+                return false;
+            });
+        });
+
+        $(".reset_btn").click(function () {
+            $("#pic").attr("src","../img/upload_bg.png")
+            setContent("");
+        })
+    })
+</script>
+</body>
+</html>

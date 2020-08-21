@@ -1,0 +1,366 @@
+<!--健康科普管理-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/page/commen.js"></script>
+    <script src="../js/base64.js"></script>
+    <style>
+        .layui_box{
+            margin: 0 10px;
+        }
+        #details{
+            display: none;  width: 1100px;
+        }
+        .layui-layer.layui-layer-page{
+            width: auto !important;
+        }
+        .toEidt{
+            margin: 20px;
+        }
+        .toEidt .layui-form-item{
+            margin-bottom: 20px;
+        }
+        #pic , .img_f{
+            width:150px;
+            height:150px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="pageBox showLoading">
+    <form class="layui-form" action="">
+        <div class="layui-inline">
+            <label class="layui-form-label">日期范围</label>
+            <div class="layui-input-inline">
+                <input type="text" name="start_time" class="layui-input" id="start_time"
+                       placeholder="开始时间" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-inline layui_box">
+            <label class="layui-form-label">至</label>
+            <div class="layui-input-inline">
+                <input type="text" name="end_time" class="layui-input" id="end_time"
+                       placeholder="结束时间" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="search">查询</button>
+            <div class="layui-btn layui-btn-normal" lay-submit lay-filter="settled">发表健康科普</div>
+        </div>
+    </form>
+    <div class="data-card charts_box">
+        <table class="layui-hide" id="table"  lay-filter="complainList"></table>
+        <script type="text/html" id="barDemo1">
+            {{# if(d.status === '0'){ }}
+            <a class="layui-btn-xs" lay-event="state_0">未提交</a>
+            {{# }if(d.status === '1') { }}
+            <a class="layui-btn-xs" lay-event="state_1">已发表</a>
+            {{# }if(d.status === '3') { }}
+            <a class="layui-btn-xs" lay-event="state_1">删除</a>
+            {{# }if(d.status === '4') { }}
+            <a class="layui-btn-xs" lay-event="state_1">审核中</a>
+            {{# }if(d.status === '5') { }}
+            <a class="layui-btn-xs" lay-event="state_1">已驳回</a>
+            {{# }if(d.status === '6') { }}
+            <a class="layui-btn-xs" lay-event="state_1">已撤回</a>
+            {{# } }}
+        </script>
+        <script type="text/html" id="barDemo">
+            {{# if(d.hospitalId !== undefined && localStorage.getItem("roleName") == "普通用户" && d.status === '4'){ }}
+            <!--医院登录 医院发表文章，审核状态时可以撤回-->
+            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="chehui">撤回</a>
+            <!--医院登录 医院发表文章，已驳回/已撤回/未提交状态 && d.status === '6' && d.status === '0'-->
+            {{# }if(d.hospitalId !== undefined && localStorage.getItem("roleName") == "普通用户" && d.status === '5') { }}
+            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+            <a class="layui-btn layui-btn-xs btn_reset" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            <!--医院登录 医院发表文章，已驳回/已撤回/未提交状态 && d.status === '6' && d.status === '0'-->
+            {{# }if(d.hospitalId !== undefined && localStorage.getItem("roleName") == "普通用户" && d.status === '6') { }}
+            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+            <a class="layui-btn layui-btn-xs btn_reset" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            <!--医院登录 医院发表文章，已驳回/已撤回/未提交状态 && d.status === '6' && d.status === '0'-->
+            {{# }if(d.hospitalId !== undefined && localStorage.getItem("roleName") == "普通用户" && d.status === '0') { }}
+            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+            <a class="layui-btn layui-btn-xs btn_reset" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            <!--医院登录 医院发表文章，已发表状态-->
+            {{# }if(d.hospitalId !== undefined && localStorage.getItem("roleName") == "普通用户" && d.status === '1') { }}
+            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+            <!--卫健委登录 医院发表文章  审核中-->
+            {{# }if(d.hospitalId !== undefined && localStorage.getItem("roleName") == "管理员" && d.status === '4'){ }}
+            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="shen">审核</a>
+            <!--卫健委登录 医院发表文章  已发表-->
+            {{# }if(d.hospitalId !== undefined && localStorage.getItem("roleName") == "管理员" && d.status === '1'){ }}
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="chehui">撤回</a>
+            <!--卫健委登录 卫健委发表文章  已发表-->
+            {{# }if(d.hospitalId == undefined && localStorage.getItem("roleName") == "管理员" && d.status === '1'){ }}
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="chehui">撤回</a>
+            <!--卫健委登录 卫健委发表文章  未提交-->
+            {{# }if(d.hospitalId == undefined && localStorage.getItem("roleName") == "管理员" && d.status === '0'){ }}
+            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+            <a class="layui-btn layui-btn-xs btn_reset" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            <!--卫健委登录 医院发表文章  已撤回-->
+            {{# }if(d.hospitalId !== undefined && localStorage.getItem("roleName") == "管理员" && d.status === '6'){ }}
+            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+            {{# } }}
+        </script>
+        <div id="laypage"></div>
+    </div>
+</div>
+
+<script type="text/javascript" >
+    $(function () {
+        $("#pic").click(function () {
+            $("#upload1").click(); //隐藏了input:file样式后，点击头像就可以本地上传
+        });
+        layui.use([ 'table','laydate','laypage'], function() {
+            var $ = layui.$;
+            var form = layui.form
+            var table = layui.table;
+            var laydate = layui.laydate;
+            var laypage = layui.laypage;
+           layui.layer.load();
+
+            var start = laydate.render({
+                elem: '#start_time'
+                ,theme: '#217BFA'
+                // type: 'datetime',
+                // max: nowTime,
+                ,btns: ['clear', 'confirm'],
+                done: function (value, date) {
+                    endMax = end.config.max;
+                    end.config.min = date;
+                    end.config.min.month = date.month - 1;
+                }
+            });
+            var end = laydate.render({
+                elem: '#end_time'
+                ,theme: '#217BFA'
+                // type: 'datetime',
+                // max: nowTime,
+                ,done: function (value, date) {
+                    if ($.trim(value) == '') {
+                        var curDate = new Date();
+                        date = {'date': curDate.getDate(), 'month': curDate.getMonth() + 1, 'year': curDate.getFullYear()};
+                    }
+                    start.config.max = date;
+                    start.config.max.month = date.month - 1;
+                }
+            })
+            var tableobj = {
+                elem: '#table'
+                ,cellMinWidth: 80
+                ,cols: [[
+                    {field:'time', title: '发表时间',width:150}
+                    ,{field:'title', title: '健康科普标题',minWidth:200}
+                    ,{field:'subtitle', title: '副标题',minWidth:400}
+                    ,{field:'status', title: '状态',toolbar: '#barDemo1',width:100}
+                    ,{fixed: 'right', title: '管理',toolbar: '#barDemo',width:200}
+                ]]
+                ,data: []
+            };
+            var pageobj = {
+                elem: 'laypage',
+                count: 0, //数据总数
+                limit: 10,  //得到每页显示的条数
+                curr: 1,  //得到当前页，以便向服务端请求对应页的数据。
+                layout: ['count', 'prev', 'page', 'next']
+            };
+            var jsonParam = {
+                startTime: '', // 起始时间
+                endTime: '', // 结束时间
+                pageNo: '1', // 起始页， 默认10
+                pageSize: '10', // 页大小， 默认10
+                status:'',
+                id : '',
+                // hospitalId:''
+            };
+            //监听工具条
+            table.on('tool(complainList)', function(obj){
+                var datas = obj.data;
+                if(obj.event === 'detail'){
+                    // layer.msg('ID：'+ data.id + ' 的查看操作');
+                    $("#readO").attr("readOnly",true).val(datas.title);
+                    $("#readF").attr("readOnly",true).val(datas.subtitle);
+                    $(".get-content").html(datas.content)
+                    if(datas.imageUrl !== undefined){
+                        $("#show_i").attr("src",datas.imageUrl)
+                    }
+                    $("#saveH").hide()
+                    $(".showUpload").hide()
+                    $(".showFollow").show()
+                    layer.open({
+                        type: 1,
+                        content: $('#details') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+                    });
+                } else if(obj.event === 'shen'){
+                    $("#readO").attr("readOnly",true).val(datas.title);
+                    $("#readF").attr("readOnly",true).val(datas.subtitle);
+                    $(".get-content").html(datas.content)
+                    if(datas.imageUrl !== undefined){
+                        $("#show_i").attr("src",datas.imageUrl)
+                    }
+                    $("#saveH").show()
+                    $(".showUpload").hide()
+                    $(".showFollow").show()
+                    layer.open({
+                        type: 1,
+                        content: $('#details') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+                    });
+                    var jsonParame = {
+                        status : '',
+                        id : datas.id
+                    }
+                    form.on('submit(saveEdit)', function (data) {
+                        jsonParame.status = '1'
+                        shen(jsonParame);
+                        return false;
+                    });
+                    form.on('submit(bohui)', function (data) {
+                        jsonParame.status = '5'
+                        shen(jsonParame);
+                        return false;
+                    });
+                } else if(obj.event === 'del'){
+                    layer.confirm('是否删除该文章', function(index){
+                       layui.layer.load();
+                        var jsonParams = {
+                            id : datas.id,
+                        }
+                        getAjax('/reg/healthEducateInfo/deleteHealthEducateInfo', jsonParams, function (resultMsg) {
+                           layui.layer.closeAll()
+                           $(".showLoading").css("opacity",'1')
+                            if(resultMsg.retCode == 0){
+                                layer.closeAll();
+                                layer.msg('已删除')
+                                getList(jsonParam);
+                            }else{
+                                layer.msg('删除失败，请重试')
+                            }
+                        });
+                    });
+                } else if(obj.event === 'chehui'){
+                    layer.confirm('是否撤回该文章', function(index){
+                       layui.layer.load();
+                        if(datas.hospitalId !== undefined && localStorage.getItem("roleName") == "管理员"){
+                            var jsonParams = {
+                                id : datas.id,
+                                status: '4'
+                            }
+                        }else{
+                            var jsonParams = {
+                                id : datas.id,
+                                status: '0'
+                            }
+                        }
+                        getAjax('/reg/healthEducateInfo/auditHealthEducateInfo', jsonParams, function (resultMsg) {
+                           layui.layer.closeAll()
+                           $(".showLoading").css("opacity",'1')
+                            if(resultMsg.retCode == 0){
+                                layer.closeAll();
+                                layer.msg('已撤回')
+                                getList(jsonParam);
+                            }else{
+                                layer.msg('撤回失败，请重试')
+                            }
+                        });
+                    });
+                } else if(obj.event === 'edit'){
+                    window.location.href = "healthSciencePublish.html?id="+datas.id+"&status="+datas.status
+                }
+            });
+            function shen(jsonParame){
+                getAjax('/reg/healthEducateInfo/auditHealthEducateInfo', jsonParame, function (resultMsg) {
+                    if(resultMsg.retCode == 0){
+                        layer.closeAll();
+                        layer.msg('已处理')
+                        getList(jsonParam);
+                    }else{
+                        layer.msg('操作失败，请重试')
+                    }
+                });
+            }
+            function getList (jsonParam) {
+                getAjax('/reg/healthEducateInfo/getHealthEducateInfoList', jsonParam, function (resultMsg) {
+                   layui.layer.closeAll()
+                   $(".showLoading").css("opacity",'1')
+                    tableobj.data = resultMsg.data.list;
+                    pageobj.count = resultMsg.data.count;
+                    table.render(tableobj);
+                    laypage.render(pageobj);
+                });
+            }
+            form.on('submit(search)', function (data) {
+                jsonParam.startTime = data.field.start_time;
+                jsonParam.endTime = data.field.end_time;
+                getList(jsonParam);
+                return false;
+            });
+            getList(jsonParam);
+            pageobj.jump = function (obj) {
+               layui.layer.load();
+               jsonParam.pageSize = obj.limit;
+                jsonParam.pageNo = obj.curr;
+                getAjax('/reg/healthEducateInfo/getHealthEducateInfoList', jsonParam, function (resultMsg) {
+                   layui.layer.closeAll()
+                   $(".showLoading").css("opacity",'1')
+                    $.each(resultMsg.data.list, function (i, item) {
+                        item.time = item.updateTime.substr(0,10)
+                    })
+                    tableobj.data = resultMsg.data.list;
+                    table.render(tableobj);
+                });
+            };
+            laypage.render(pageobj);
+            form.on('submit(settled)', function(data){
+                window.location.href = 'healthSciencePublish.html'
+            });
+        })
+    })
+</script>
+</body>
+<div id="details">
+    <form class="layui-form toEidt">
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input type="text" name="title"  placeholder="请输入" autocomplete="off" class="layui-input" id="readO">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">副标题</label>
+            <div class="layui-input-block">
+                <input type="text" name="subtitle"  placeholder="请输入" autocomplete="off" class="layui-input" id="readF">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">健康科普封面：</label>
+            <div class="layui-input-block showFollow">
+                <img class="img_f" id="show_i" src="../img/upload_bg.png" alt="">
+            </div>
+            <div class="layui-input-block showUpload">
+                <img id="pic" src="../img/upload_bg.png" >
+                <!--<input id="upload1" name="file" onchange="PreviewImage(this, '#pic', 'img')" accept="image/*" type="file" style="display: none"/>-->
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">内容</label>
+            <div class="layui-input-block get-content">
+                <!--<textarea placeholder="请输入内容" name="content" class="layui-textarea" id="readT"></textarea>-->
+            </div>
+        </div>
+        <div class="layui-form-item" id="saveH">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn btn_reset" lay-submit="" lay-filter="saveEdit">通过</button>
+                <button type="submit" class="layui-btn btn_reset" lay-submit="" lay-filter="bohui">驳回</button>
+            </div>
+        </div>
+    </form>
+</div>
+</html>

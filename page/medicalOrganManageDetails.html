@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>医疗机构管理</title>
+    <script src="../js/page/commen.js"></script>
+    <style>
+        .viewDetail .layui-form-label{
+            width: 170px;
+        }
+        .viewDetail .layui-input-block{
+            line-height: 37px;
+            margin-left: 200px;
+        }
+        .zp{
+            margin-bottom: 20px;
+        }
+        .zp p{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="pageBox layui-row showLoading" style="background: #fff;">
+        <div class="layui-form viewDetail layui-col-md8">
+            <div class="layui-form-item">
+                <label class="layui-form-label">医疗机构名称：</label>
+                <div class="layui-input-block" id="hospitalName">
+
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">医疗机构地址：</label>
+                <div class="layui-input-block" id="hospitalAddr">
+
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">法人姓名：</label>
+                <div class="layui-input-block" id="farenName">
+
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">联系电话：</label>
+                <div class="layui-input-block" id="telephone">
+
+                </div>
+            </div>
+            <div class="layui-row">
+                <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">法人身份证：</label>
+                        <div class="layui-input-block zp">
+                            <img src="" alt="暂无图片" width="300px" height="200px" id="zhengmian">
+                            <p>法人身份证(正面)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md6">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"></label>
+                        <div class="layui-input-block zp">
+                            <img src="" alt="暂无图片" width="300px" height="200px" id="beimian">
+                            <p>法人身份证(背面)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item layui-row">
+                <div class="layui-col-md6">
+                    <label class="layui-form-label">营业执照：</label>
+                    <div class="layui-input-block">
+                        <div>
+                            <img src="" alt="暂无图片" width="300px" height="200px" id="zhizhao">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md6">
+                    <label class="layui-form-label">医院图片：</label>
+                    <div class="layui-input-block">
+                        <div>
+                            <img src="" alt="暂无图片" width="300px" height="200px" id="hospitalImg">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">HIS系统服务地址：</label>
+                <div class="layui-input-block" id="his">
+
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">备注（退回原因）</label>
+                <div class="layui-input-block">
+                    <textarea name="desc" placeholder="请输入内容" class="layui-textarea" id="remark"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 20px;text-align: center">
+                <button class="layui-btn" id="tongguo">审核通过</button>
+                <button class="layui-btn layui-btn-primary" id="back">审核退回</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+                function getQueryVariable(variable){
+                    var query = window.location.search.substring(1);
+                    var vars = query.split("&");
+                    for (var i=0;i<vars.length;i++) {
+                        var pair = vars[i].split("=");
+                        if(pair[0] == variable){return pair[1];}
+                    }
+                    return(false);
+                }
+                var hospitalId = getQueryVariable("id");
+                var type = getQueryVariable("type");
+                if(type == 1){
+                    $('#tongguo').hide();
+                }else if(type == 0){
+                    $('#tongguo').show();
+                }
+           layui.use([ 'layer'], function() {
+              layui.layer.load();
+              var jsonParam = {
+                 id: hospitalId,
+              };
+              getAjax('/reg/appoint/getHospitalDetail', jsonParam, function (resultMsg) {
+                 layui.layer.closeAll()
+                 $(".showLoading").css("opacity",'1')
+                 if (resultMsg.data) {
+                    $('#hospitalName').html(resultMsg.data.name);
+                    $('#hospitalAddr').html(resultMsg.data.address);
+                    $('#farenName').html(resultMsg.data.legalParson);
+                    $('#telephone').html(resultMsg.data.telephone);
+                    $('#his').html(resultMsg.data.hisInterfaceUrl);
+                    $('#zhengmian').attr('src', resultMsg.data.legalIdcardFront);
+                    $('#beimian').attr('src', resultMsg.data.legalIdcardReverse);
+                    $('#zhizhao').attr('src', resultMsg.data.bussinessLicense);
+                    $('#hospitalImg').attr('src', resultMsg.data.imageUrl);
+                 }
+              });
+           })
+            layui.use([ 'layer'], function() {
+                var layer = layui.layer;
+                // 审核退回
+                $('#back').click(function () {
+                    layer.confirm('确定审核退回?', {icon: 3, title:'提示'}, function(index){
+                        var remark = $('#remark').val();
+                        var jsonParam = {
+                            id: hospitalId,
+                            remark:remark,
+                            status:'0'
+                        };
+                       layer.load();
+                        getAjax('/reg/hospital/updateHospitalStatus',jsonParam,function (resultMsg) {
+                            layer.close(index);
+                           layer.closeAll()
+                           $(".showLoading").css("opacity",'1')
+                            window.location.href = 'medicalOrganization.html';
+                        });
+
+                    });
+
+                });
+                // 审核通过
+                $('#tongguo').click(function () {
+                    layer.confirm('确定审核通过?', {icon: 3, title:'提示'}, function(index){
+                        var jsonParam = {
+                            id: hospitalId,
+                            status:'2'
+                        };
+                       layer.load();
+                        getAjax('/reg/hospital/updateHospitalStatus',jsonParam,function (resultMsg) {
+                            layer.close(index);
+                           layer.closeAll()
+                           $(".showLoading").css("opacity",'1')
+                            window.location.href = 'medicalOrganization.html';
+                        });
+                    });
+
+                })
+            });
+        })
+    </script>
+</body>
+</html>

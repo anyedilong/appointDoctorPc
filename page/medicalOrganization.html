@@ -1,0 +1,176 @@
+    <!--医疗机构管理-->
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <script src="../js/page/commen.js"></script>
+        <style>
+            .layui_box{
+                margin: 0 10px;
+            }
+        </style>
+    </head>
+    <body>
+    <div class="pageBox showLoading">
+        <form class="layui-form" action="">
+            <div class="layui-inline">
+                <label class="layui-form-label">日期范围</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="start_time" class="layui-input" id="start_time"
+                           placeholder="开始时间" autocomplete="off">
+                </div>
+            </div>
+            <div class="layui-inline layui_box">
+                <label class="layui-form-label">至</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="end_time" class="layui-input" id="end_time"
+                           placeholder="结束时间" autocomplete="off">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="button" class="layui-btn layui-btn-normal" lay-submit lay-filter="search">查询</button>
+                <button type="button" class="layui-btn layui-btn-normal" lay-submit lay-filter="settled">医院入驻</button>
+            </div>
+        </form>
+        <div class="data-card charts_box">
+            <table class="layui-hide" id="table" lay-filter="complainList"></table>
+            <script type="text/html" id="barDemo1">
+                {{# if(d.status === '1'){ }}
+                <a class="layui-btn-xs" lay-event="state_0">待审核</a>
+                {{# }if(d.status === '2') { }}
+                <a class="layui-btn-xs" lay-event="state_1">审核通过</a>
+                {{# } }}
+            </script>
+            <script type="text/html" id="barDemo">
+                {{# if(d.status === '1'){ }}
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="detail">审核</a>
+                {{# }if(d.status === '2') { }}
+                <a class="layui-btn layui-btn-xs layui-btn-xs btn_reset" lay-event="edit">反审核</a>
+                {{# } }}
+            </script>
+            <div id="laypage"></div>
+        </div>
+    </div>
+
+    <script type="text/javascript" >
+        $(function () {
+            layui.use([ 'table','laydate','laypage'], function() {
+                var $ = layui.$;
+                var form = layui.form
+                var table = layui.table;
+                var laydate = layui.laydate;
+                var laypage = layui.laypage;
+               layui.layer.load();
+
+                var start = laydate.render({
+                    elem: '#start_time'
+                    ,theme: '#217BFA'
+                    // type: 'datetime',
+                    // max: nowTime,
+                    ,btns: ['clear', 'confirm'],
+                    done: function (value, date) {
+                        endMax = end.config.max;
+                        end.config.min = date;
+                        end.config.min.month = date.month - 1;
+                    }
+                });
+                var end = laydate.render({
+                    elem: '#end_time'
+                    ,theme: '#217BFA'
+                    // type: 'datetime',
+                    // max: nowTime,
+                    ,done: function (value, date) {
+                        if ($.trim(value) == '') {
+                            var curDate = new Date();
+                            date = {'date': curDate.getDate(), 'month': curDate.getMonth() + 1, 'year': curDate.getFullYear()};
+                        }
+                        start.config.max = date;
+                        start.config.max.month = date.month - 1;
+                    }
+                })
+                var tableobj = {
+                    elem: '#table'
+                    ,cellMinWidth: 80
+                    ,cols: [[
+                        {field:'name', title: '医疗机构名称',minWidth:200}
+                        ,{field:'legalParson', title: '法人姓名',minWidth:100}
+                        ,{field:'telephone', title: '法人联系电话',minWidth:200}
+                        ,{field:'hisInterfaceUrl', title: 'his服务地址',minWidth:200}
+                        ,{field:'time', title: '提交时间', minWidth: 200}
+                        ,{fixed: 'right', title: '状态',toolbar: '#barDemo1',minWidth:100}
+                        ,{fixed: 'right', title: '管理',toolbar: '#barDemo',minWidth:100}
+                    ]]
+                    ,data: []
+                };
+                var pageobj = {
+                    elem: 'laypage',
+                    count: 0, //数据总数
+                    limit: 10,  //得到每页显示的条数
+                    curr: 1,  //得到当前页，以便向服务端请求对应页的数据。
+                    layout: ['count', 'prev', 'page', 'next']
+                };
+                var jsonParam = {
+                    startDate: '', // 起始时间
+                    endDate: '', // 结束时间
+                    pageNo: '1', // 起始页， 默认10
+                    pageSize: '10', // 页大小， 默认10
+                    status:'',
+                    id : ''
+                };
+                //监听工具条
+                table.on('tool(complainList)', function(obj){
+                    var data = obj.data;
+                    if(obj.event === 'detail'){
+                        window.location.href = "medicalOrganManageDetails.html?type=0&id="+data.id
+                    } else if(obj.event === 'edit'){
+                        window.location.href = "medicalOrganManageDetails.html?type=1&id="+data.id
+                    }
+                });
+                function getList (jsonParam) {
+                    getAjax('/reg/hospital/getHospitalPage', jsonParam, function (resultMsg) {
+                       layui.layer.closeAll()
+                       $(".showLoading").css("opacity",'1')
+                        // $.each(resultMsg.data.list, function (i, item) {
+                        //     item.time = item.createTime.substr(0,10)
+                        // })
+                        tableobj.data = resultMsg.data.list;
+                        pageobj.count = resultMsg.data.count;
+                        table.render(tableobj);
+                        laypage.render(pageobj);
+                    });
+                }
+                form.on('submit(search)', function (data){
+                    jsonParam.startDate = data.field.start_time;
+                    jsonParam.endDate = data.field.end_time;
+                    getList(jsonParam);
+                    return false;
+                });
+                form.on('submit(settled)', function (data) {
+                    window.location.href = 'hosEntry.html'
+                });
+                getList(jsonParam);
+                pageobj.jump = function (obj) {
+                   layui.layer.load();
+                    jsonParam.pageSize = obj.limit;
+                    jsonParam.pageNo = obj.curr;
+                    getAjax('/reg/hospital/getHospitalPage', jsonParam, function (resultMsg) {
+                       layui.layer.closeAll()
+                       $(".showLoading").css("opacity",'1')
+                        $.each(resultMsg.data.list, function (i, item) {
+                            console.log(item.createTime)
+                            if(item.createTime !== undefined){
+                                item.time = item.createTime.substring(0,10)
+                            }
+                        })
+                        tableobj.data = resultMsg.data.list;
+                        table.render(tableobj);
+                        console.log(tableobj.data)
+                    });
+                };
+                laypage.render(pageobj);
+            })
+        })
+    </script>
+    </body>
+    </html>

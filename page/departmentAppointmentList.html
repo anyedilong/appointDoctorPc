@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>科室预约统计</title>
+    <script src="../js/page/commen.js"></script>
+    <style>
+        .layui_box{
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="pageBox">
+        <form class="layui-form" action="">
+            <div class="layui-inline">
+                <label class="layui-form-label">日期范围：</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="startTime" class="layui-input" id="start_time"
+                           placeholder="开始时间">
+                </div>
+            </div>
+            <div class="layui-inline layui_box">
+                <label class="layui-form-label">至</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="endTime" class="layui-input" id="end_time"
+                           placeholder="结束时间">
+                </div>
+            </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">科室：</label>
+                    <div class="layui-input-inline">
+                        <select name="departCode" lay-search="" lay-filter="keshiSel" id="departList">
+                            <option value="">搜索科室</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline layui_box">
+                    <label class="layui-form-label">门诊：</label>
+                    <div class="layui-input-inline">
+                        <select name="outCode" lay-search="" lay-filter="menzhenSel" id="outList">
+                            <option value="">请先选择科室</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button type="submit" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="search">查询</button>
+                </div>
+        </form>
+        <div class="data-card charts_box">
+            <table class="layui-hide" id="table" lay-filter="complainList"></table>
+            <div id="laypage"></div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            layui.use(['form','table','laydate','laypage'], function(){
+               layui.layer.load();
+                var $ = layui.jquery;
+                var form = layui.form;
+                var table = layui.table;
+                var laydate = layui.laydate;
+                var laypage = layui.laypage;
+
+                var start = laydate.render({
+                    elem: '#start_time'
+                    ,theme: '#217BFA'
+                    ,btns: ['clear', 'confirm'],
+                    done: function (value, date) {
+                        endMax = end.config.max;
+                        end.config.min = date;
+                        end.config.min.month = date.month - 1;
+                    }
+                });
+                var end = laydate.render({
+                    elem: '#end_time'
+                    ,theme: '#217BFA'
+                    ,done: function (value, date) {
+                        if ($.trim(value) == '') {
+                            var curDate = new Date();
+                            date = {'date': curDate.getDate(), 'month': curDate.getMonth() + 1, 'year': curDate.getFullYear()};
+                        }
+                        start.config.max = date;
+                        start.config.max.month = date.month - 1;
+                    }
+                });
+                getDepartList();
+                function getDepartList() {
+                    // 获取科室
+                    var jsonParamOne = {
+                        parentCode:0,
+                        pageNo:'1',
+                        pageSize:'10'
+                    };
+                    getAjax('/reg/appoint/getDepartmentListByUser', jsonParamOne, function (resultMsg) {
+                       layui.layer.closeAll()
+                       $(".showLoading").css("opacity",'1')
+                        $.each(resultMsg.data.list, function (i, item) {
+                            $("#departList").append('<option value="' + item.code + '">' + item.name + '</option>');
+                        });
+                        layui.form.render("select");
+                    });
+                }
+                form.on('select(keshiSel)', function(data){
+                    if(data.value){
+                       layui.layer.load();
+                        var jsonParam = {
+                            parentCode: data.value, // 所属科室的名称
+                            pageNo:'1',
+                            pageSize:'10'
+                        };
+                        getAjax('/reg/appoint/getDepartmentList', jsonParam, function (resultMsg) {
+                           layui.layer.closeAll()
+                           $(".showLoading").css("opacity",'1')
+                            $("#outList").empty();
+                            $("#outList").append('<option value="">搜索门诊</option>');
+                            $.each(resultMsg.data.list, function (i, item) {
+                                $("#outList").append('<option value="' + item.code + '">' + item.name + '</option>');
+                            });
+                            layui.form.render("select");
+                        });
+                    }
+                    $("#outList").empty();
+                    $("#outList").append('<option value="">搜索门诊</option>');
+                    layui.form.render("select");
+                });
+                var tableobj = {
+                    elem: '#table',
+                    cellMinWidth: 80,
+                    cols: [[
+                        {field:'departName', title: '科室名称',minWidth:200}
+                        ,{field:'outName', title: '门诊名称',minWidth:100}
+                        ,{field:'subNum', title: '预约数',minWidth:200}
+                        ,{field:'medNum', title: '就诊数',minWidth:200}
+                        ,{field:'canalNum', title: '取消数', minWidth: 200}
+                        ,{field:'overNum', title: '过期数',minWidth:100}
+                    ]],
+                    data: []
+                };
+                var pageobj = {
+                    elem: 'laypage',
+                    count: 0, //数据总数
+                    limit: 10,  //得到每页显示的条数
+                    curr: 1,  //得到当前页，以便向服务端请求对应页的数据。
+                    layout: ['count', 'prev', 'page', 'next']
+                };
+                var jsonParam = {
+                    startDate:'',
+                    endDate:'',
+                    departCode:'',
+                    outCode:'',
+                    pageNo: '1', // 起始页， 不传默认10， 不能为“”
+                    pageSize: '10' // 页大小， 不传默认10， 不能为“”
+                };
+                function getList(jsonParam){
+                   layui.layer.load();
+                    getAjax('/reg/departstats/getDepartStatsList',jsonParam,function (resultMsg) {
+                       layui.layer.closeAll()
+                       $(".showLoading").css("opacity",'1')
+                        tableobj.data = resultMsg.data.list;
+                        pageobj.count = resultMsg.data.count;
+                        table.render(tableobj);
+                        laypage.render(pageobj);
+                    });
+                }
+                form.on('submit(search)', function (data) {
+                    jsonParam.startDate = data.field.startTime;
+                    jsonParam.endDate = data.field.endTime;
+                    jsonParam.departCode = data.field.departCode;
+                    jsonParam.outCode = data.field.outCode;
+                    getList(jsonParam);
+                    return false; //很重要的一句话，不能删
+                });
+                getList(jsonParam);
+                pageobj.jump = function (obj) {
+                   layui.layer.load();
+                    jsonParam.pageSize = obj.limit;
+                    jsonParam.pageNo = obj.curr;
+                    getAjax('/reg/departstats/getDepartStatsList', jsonParam, function (resultMsg) {
+                       layui.layer.closeAll()
+                       $(".showLoading").css("opacity",'1')
+                        tableobj.data = resultMsg.data.list;
+                        table.render(tableobj);
+                    });
+                };
+                laypage.render(pageobj);
+            });
+
+
+        });
+
+    </script>
+</body>
+</html>

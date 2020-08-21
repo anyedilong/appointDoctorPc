@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="../js/page/commen.js"></script>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <script type="text/javascript" charset="utf-8" src="../../baiduUEditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../../baiduUEditor/ueditor.all.min.js"> </script>
+    <script type="text/javascript" charset="utf-8" src="../../baiduUEditor/lang/zh-cn/zh-cn.js"></script>
+    <style>
+        .layui-form-item{
+            margin-bottom: 20px;
+            width: 50%;
+        }
+         .viewDetail .layui-form-label{
+             width: 100px;
+             text-align: left;
+         }
+        .layui-form-select dl{
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body>
+    <div class="pageBox">
+        <div class="data-card">
+            <form class="layui-form viewDetail" action="" lay-filter="myForm">
+            <div class="layui-form-item">
+                <label class="layui-form-label">标题：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">副标题：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="subtitle" lay-verify="required" autocomplete="off" placeholder="请输入副标题" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">挂号指南类别：</label>
+                    <div class="layui-input-inline">
+                        <select name="classification" lay-verify="required" lay-search="">
+                            <option value="">请选择</option>
+                            <option value="1003001">预约问题</option>
+                            <option value="1003002">账号问题</option>
+                            <option value="1003003">爽约及黑名单问题</option>
+                            <option value="1003004">费用问题</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="data-card charts_box">
+            <!-- 百度富文本框 -->
+            <script id="editor" type="text/plain" style="width:1024px;height:500px;"></script>
+
+        	<div id="contentText" style="display:none"></div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="save">保存</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            var zhinanId = '';
+            var type = '';
+            function getQueryVariable(variable){
+                var query = window.location.search.substring(1);
+                var vars = query.split("&");
+                for (var i=0;i<vars.length;i++) {
+                    var pair = vars[i].split("=");
+                    if(pair[0] == variable){return pair[1];}
+                }
+                return(false);
+            }
+            zhinanId = getQueryVariable("id");
+        layui.use(['form','table','laydate'], function(){
+            var form = layui.form;
+            if(zhinanId){
+               layui.layer.load();
+                var jsonParam = {
+                    id: zhinanId,
+                };
+                getAjax('/reg/regguide/getGuideInfoById', jsonParam, function (resultMsg) {
+                    form.val('myForm',{
+                        "title":resultMsg.data.title,
+                        "subtitle":resultMsg.data.subtitle,
+                        "classification":resultMsg.data.classificationid,
+                    })
+                   layui.layer.closeAll()
+                   $(".showLoading").css("opacity",'1')
+                    setContent(resultMsg.data.content);
+                });
+                type = '1';
+            }else{
+                zhinanId = '';
+                type = '2';
+            }
+
+            form.on('submit(save)', function (data) {
+               layui.layer.load();
+                if(type == 1){
+                    var jsonParam = {
+                        id:zhinanId,
+                        title: data.field.title,
+                        subtitle: data.field.subtitle,
+                        content: getContent(),
+                        classificationid: data.field.classification,
+                    };
+                }
+                if(type == 2){
+                    var jsonParam = {
+                        title: data.field.title,
+                        subtitle: data.field.subtitle,
+                        content: getContent(),
+                        classificationid: data.field.classification,
+                    };
+                }
+                getAjax('/reg/regguide/saveOrUpdateGuideInfo', jsonParam, function (resultMsg) {
+                   layui.layer.closeAll()
+                   $(".showLoading").css("opacity",'1')
+                    layer.open({
+                        title:'提示',
+                        icon:1,
+                        content:'保存成功',
+                        yes:function(){
+                            window.location.href = 'registrationGuide.html';
+                        }
+                    });
+                });
+                return false; //很重要的一句话，不能删
+            });
+        });
+        })
+        
+        var ue = UE.getEditor('editor', {
+	                toolbars: [
+	                    [
+	                        'undo', //撤销
+	                        'bold', //加粗
+	                        'underline', //下划线
+	                        'preview', //预览
+	                        'horizontal', //分隔线
+	                        'inserttitle', //插入标题
+	                        'cleardoc', //清空文档
+	                        'fontfamily', //字体
+	                        'fontsize', //字号
+	                        'paragraph', //段落格式
+	                        'simpleupload', //单图上传
+	                        'insertimage', //多图上传
+	                        'inserttable', //插入表格
+	                        'justifyleft', //居左对齐
+	                        'justifyright', //居右对齐
+	                        'justifycenter', //居中对
+	                        'justifyjustify', //两端对齐
+	                        'forecolor', //字体颜色
+	                        'fullscreen', //全屏
+	                        'edittip ', //编辑提示
+	                        'customstyle', //自定义标题
+	                         ]
+	                    ]
+	                });
+       	// 获取内容
+       	function getContent() {
+           	return UE.getEditor('editor').getContent();
+        }
+       	
+       	// 设置内容
+        function setContent(content) {
+    		$("#contentText").html(content);
+    		try {
+           		UE.getEditor('editor').setContent($("#contentText").html());
+    		} catch (err) {
+    			console.log("editor加载中");
+    		}
+        }
+       	
+       	ue.ready(function() {
+       		UE.getEditor('editor').setContent($("#contentText").html());
+       	})
+       	
+       	$(".layui-btn-primary").click(function(){
+       		setContent("");
+       	});
+    </script>
+</body>
+</html>

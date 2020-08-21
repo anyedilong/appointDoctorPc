@@ -1,0 +1,262 @@
+<!--hosEntry.html 医院申请入驻-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/base64.js"></script>
+    <script src="../js/page/commen.js"></script>
+    <link rel="stylesheet" href="../css/page/hospitalEntry.css">
+    <style>
+        .step_content {
+            margin-top: 0;
+            padding-top: 30px;
+        }
+        .pageCard, .step_content {
+            display: block !important;
+        }
+    </style>
+</head>
+<body>
+<div class="pageBox">
+    <div class="pageCard">
+        <div class="step_content layui-row" style="display: block">
+            <form id="addform" lay-filter="addform" class="layui-form layui-col-md-offset2 layui-col-md8" action="">
+                <div class="page-tit com-tit blueblack" style="margin-bottom: 20px;">入驻医院</div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">医疗机构名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="name" name="name" lay-verify="required" autocomplete="off" placeholder="请填写医疗机构名称" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">医院等级</label>
+                    <div class="layui-input-block">
+                        <select id="levelType" lay-filter="levelType" name="levelType" lay-verify="required">
+                            <option value="">医院等级</option>
+                            <option value="三级甲等">三级甲等</option>
+                            <option value="三级乙等">三级乙等</option>
+                            <option value="三级丙等">三级丙等</option>
+                            <option value="二级甲等">二级甲等</option>
+                            <option value="二级乙等">二级乙等</option>
+                            <option value="二级丙等">二级丙等</option>
+                            <option value="一级甲等">一级甲等</option>
+                            <option value="一级乙等">一级乙等</option>
+                            <option value="一级丙等">一级丙等</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <!--缺少参数-->
+                    <label class="layui-form-label">医院类型</label>
+                    <div class="layui-input-block">
+                        <select id="type" lay-filter="type" name="type" lay-verify="required">
+                            <option value="">医院类型</option>
+                            <option value="1">综合医院</option>
+                            <option value="2">专科医院</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">区划名称</label>
+                    <!--<div class="layui-input-block">-->
+                        <!--<input type="text" id="areaCode" name="areaCode" lay-verify="required" autocomplete="off" placeholder="请填写区划编码" class="layui-input">-->
+                    <!--</div>-->
+                    <div class="layui-input-block">
+                        <select name="areaCode" lay-search="" lay-verify="required" lay-filter="areaCode" id="areaCode">
+                            <option value="">直接选择或搜索选择</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">医疗机构地址</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="address" name="address" lay-verify="required" autocomplete="off" placeholder="请填写医疗机构地址" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">法人姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="legalParson" name="legalParson" lay-verify="required" autocomplete="off" placeholder="请填写法人姓名" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">联系电话</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="telephone" name="telephone" lay-verify="required" autocomplete="off" placeholder="请填写联系电话" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-row">
+                    <div class="layui-col-md6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">法人身份证</label>
+                            <div class="layui-input-block">
+                                <div class="layui-upload-drag" id="idcard1">
+                                    <i class="iconfont icon-icon-test"></i>
+                                   <!--<img src="../img/logo.png" alt="">-->
+                                </div>
+                                <input id="upload1" onchange="PreviewImage(this, '#idcard1', 'bg')" accept="image/*" type="file" style="display: none"/>
+                                <input type="hidden" id="legalIdcardFront" lay-verify="imgreq" name="legalIdcardFront" id="legalIdcardFront">
+                                <div class="upload-txt">上传身份证照片(正面)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label"></label>
+                            <div class="layui-input-block">
+                                <div class="layui-upload-drag" id="idcard2">
+                                    <i class="iconfont icon-icon-test"></i>
+                                </div>
+                                <input id="upload2" onchange="PreviewImage(this, '#idcard2', 'bg')" accept="image/*" type="file" style="display: none"/>
+                                <input type="hidden" id="legalIdcardReverse" lay-verify="imgreq" name="legalIdcardReverse" id="legalIdcardReverse">
+                                <div class="upload-txt">上传身份证照片(反面)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-row">
+                    <div class="layui-col-md6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">营业执照</label>
+                            <div class="layui-input-block">
+                                <div class="layui-upload-drag" id="yingye">
+                                    <i class="iconfont icon-icon-test"></i>
+                                </div>
+                                <!--<img id="pic1" src="../img/upload_bg.png" >-->
+                                <input id="upload3" onchange="PreviewImage(this, '#yingye', 'bg')" accept="image/*" type="file" style="display: none"/>
+                                <input type="hidden" id="bussinessLicense" lay-verify="imgreq" name="bussinessLicense" id="bussinessLicense">
+                                <div class="upload-txt">上传营业执照</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">医院图片</label>
+                            <div class="layui-input-block">
+                                <div class="layui-upload-drag" id="yiyuanimg">
+                                    <i class="iconfont icon-icon-test"></i>
+                                </div>
+                                <!--<img id="pic1" src="../img/upload_bg.png" >-->
+                                <input id="upload4" onchange="PreviewImage(this, '#yiyuanimg', 'bg')" accept="image/*" type="file" style="display: none"/>
+                                <input type="hidden" id="imageUrl" lay-verify="imgreq" name="imageUrl" id="imageUrl">
+                                <div class="upload-txt">上传医院图片</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">医院介绍</label>
+                    <div class="layui-input-block" style="height: auto">
+                                        <textarea id="introduce" name="introduce" class="layui-textarea" rows="15" lay-verify="required"
+                                                  placeholder="请输入医院介绍"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">HIS系统服务地址</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="hisInterfaceUrl" name="hisInterfaceUrl" lay-verify="required" autocomplete="off" placeholder="请填写HIS系统服务地址" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"></label>
+                    <div class="layui-input-block">
+                        <a href="../jiekouwendang.doc" download="预约挂号接口文档">下载标准接口文档</a>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"></label>
+                    <div class="layui-input-block">
+                        <div class="my-checkbox">
+                            <div class="checkdiv checkdiv1 my-checked">
+                                <i class="iconfont">&#xe602;</i>
+                                <span class="my-label">我已阅读《预约挂号接口文档》</span>
+                            </div>
+                            <div class="checkdiv checkdiv2" id="regcheck">
+                                <i class="iconfont">&#xe601;</i>
+                                <span class="my-label">我已阅读《预约挂号接口文档》</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item form-btn layui-row layui-col-space20">
+                    <div class="layui-col-md6">
+                        <button type="button" lay-submit lay-filter="stepBtn1" class="add-close layui-btn layui-btn-normal fr">完成</button>
+                    </div>
+                    <div class="layui-col-md6">
+                        <button type="reset" class="layui-btn layui-btn-primary fl">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    $(function () {
+        // 获取入驻信息
+        var jsonParam = {};
+        layui.use('form', function() {
+            var form = layui.form;
+            // 验证
+            form.verify({
+                // imgreq: function (value, item) {
+                // if (value == '') {
+                //     return '请上传所需证件照片'
+                // }
+                // }
+            });
+            getArea();
+            function getArea(){
+                getAjax('/reg/area/getAreaList', '', function (resultMsg) {
+                    $.each(resultMsg.data, function (i, item) {
+                        $("#areaCode").append('<option value="' + item.areaCode + '">' + item.areaName + '</option>');
+                    });
+                    layui.form.render("select");
+                })
+            }
+            getType();
+            function getType () {
+                getAjax('/reg/dict/queryDictAreaList', {}, function (resultMsg) {
+                    $('#type').empty();
+                    var dataList = resultMsg.data;
+                    if (dataList.length > 0) {
+                        $("#type").append('<option value="">医院类型</option>');
+                        $.each(dataList, function (i, item) {
+                            $("#type").append('<option value="' + item.code + '">' + item.name + '</option>');
+                        });
+                    } else {
+                        $("#type").append('<option value="">暂无数据</option>');
+                    }
+                    layui.form.render("select");
+                });
+            }
+            form.on('submit(stepBtn1)', function(data){
+                if ($('#regcheck').hasClass('my-checked')) {
+                    for (var key in data.field) {
+                        jsonParam[key] = data.field[key];
+                    }
+                    getAjax('/reg/hospital/saveHospitalInfo', jsonParam, function (resultMsg) {
+                        window.location.href = 'medicalOrganization.html';
+                    });
+                }
+            });
+        });
+        // checkbox
+        $('.my-checkbox').click(function () {
+            if ($(this).children('.checkdiv').eq(0).hasClass('my-checked')) {
+                $(this).children('.checkdiv').eq(0).removeClass('my-checked');
+                $(this).children('.checkdiv').eq(1).addClass('my-checked');
+            } else {
+                $(this).children('.checkdiv').eq(1).removeClass('my-checked');
+                $(this).children('.checkdiv').eq(0).addClass('my-checked');
+            }
+        });
+        // 身份证照片上传
+        $(".layui-upload-drag").click(function () {
+            $(this).next('input').click();
+        });
+
+    });
+</script>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>医生投诉统计</title>
+    <script src="../js/page/commen.js"></script>
+</head>
+<body>
+    <div class="pageBox">
+        <form class="layui-form" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">年度：<span id="tousuYear">
+
+                </span></label>
+
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">月度：<span id="tousuMonth">
+
+                </span></label>
+
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">科室：<span id="departName">
+
+                </span></label>
+
+                </div>
+            </div>
+        </form>
+        <div class="data-card">
+            <table class="layui-hide" id="table"></table>
+            <div id="laypage"></div>
+        </div>
+    </div>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">详细</a>
+    </script>
+    <script>
+        $(function () {
+            layui.use(['table','laypage'], function(){
+                var table = layui.table;
+                var laypage = layui.laypage;
+                var deptCode = localStorage.getItem('departCode');
+                var tousuYear = localStorage.getItem('tousuYear');
+                var tousuMonth = localStorage.getItem('tousuMonth');
+                $('#departName').html(localStorage.getItem('departName'));
+                $('#tousuYear').html(tousuYear);
+                $('#tousuMonth').html(tousuMonth);
+                var tableobj = {
+                    elem: '#table',
+                    cellMinWidth: 80,
+                    cols: [[
+                        {field:'DEPT_NAME', title: '门诊',minWidth:200}
+                        ,{field:'PERSION_NAME', title: '投诉人',minWidth:100}
+                        ,{field:'PERSION_PHONE', title: '联系电话',minWidth:200}
+                        ,{field:'DOCTOR_NAME', title: '被投诉医生',minWidth:200}
+                        ,{field:'COMPLAINT_CONTENT', title: '投诉描述', minWidth: 200}
+                    ]],
+                    data: []
+                };
+                var pageobj = {
+                    elem: 'laypage',
+                    count: 0, //数据总数
+                    limit: 10,  //得到每页显示的条数
+                    curr: 1,  //得到当前页，以便向服务端请求对应页的数据。
+                    layout: ['count', 'prev', 'page', 'next']
+                };
+                var jsonParam = {
+                    year:tousuYear,
+                    month:tousuMonth,
+                    deptCode:deptCode,
+                };
+                function getList(jsonParam){
+                    getAjax('/reg/subscribe/getEvaluateDoctorInfo',jsonParam,function (resultMsg) {
+                        tableobj.data = resultMsg.data.list;
+                        pageobj.count = resultMsg.data.count;
+                        table.render(tableobj);
+                        laypage.render(pageobj);
+                    });
+                }
+                getList(jsonParam);
+                pageobj.jump = function (obj) {
+                    jsonParam.pageSize = obj.limit;
+                    jsonParam.pageNo = obj.curr;
+                    getAjax('/reg/subscribe/getEvaluateDoctorInfo', jsonParam, function (resultMsg) {
+                        tableobj.data = resultMsg.data.list;
+                        table.render(tableobj);
+                    });
+                };
+                laypage.render(pageobj);
+            });
+        })
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>医生投诉统计</title>
+    <script src="../js/page/commen.js"></script>
+    <style>
+        .charts {
+            /*width: 100%;*/
+            /*height: 300px;*/
+        }
+    </style>
+</head>
+<body>
+    <div class="pageBox">
+        <form class="layui-form" action="">
+            <div class="layui-inline">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">年度：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="year" class="layui-input" id="test2" placeholder="请选择">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">月度：</label>
+                    <div class="layui-input-inline">
+                        <select name="month" lay-filter="sss" id="month">
+                            <option value=""></option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="submit" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="search" id="search">查询</button>
+            </div>
+        </form>
+        <div class="data-card charts_box">
+            <div class="charts" id="barcharts"></div>
+        </div>
+    </div>
+
+    <script>
+        $(function () {
+            layui.use(['form','laydate'], function(){
+                var laydate = layui.laydate;
+                var form = layui.form;
+                var tousuDate = '';
+                var yyy = '';
+                //年选择器
+                laydate.render({
+                    elem: '#test2'
+                    ,theme: '#217BFA'
+                    ,type: 'year'
+                    ,done: function(value, date, endDate){
+                        yyy = value; //得到日期生成的值，如：2017-08-18
+                    }
+                });
+                // 月选择器
+                laydate.render({
+                    elem: '#test3'
+                    ,theme: '#217BFA'
+                    , type: 'month'
+                });
+                // form.on('select(sss)', function(data){
+                //     var year = $('#test2').val();
+                //     console.log(year)
+                //     if(!year){
+                //         layer.msg('请先选择年份')
+                //         $('#test3').val('')
+                //     }
+                // });
+                function chartOpt(xdata,seriesdata) {
+                    var baroption = {
+                        xAxis: {
+                            type: 'category',
+                            data: xdata,
+                            axisLine: {
+                                lineStyle: {
+                                    type: 'solid',
+                                    color: '#F2F6FA',
+                                    width: '1'//坐标线的宽度
+                                }
+                            },
+                            axisLabel: {
+                                textStyle: {
+                                    color: '#A3A8AE'
+                                }
+                            },
+                        },
+                        yAxis: {
+                            type: 'value',
+                            axisLine: {
+                                lineStyle: {
+                                    type: 'solid',
+                                    color: 'none',//左边线的颜色
+                                    width: '1'//坐标线的宽度
+                                }
+                            },
+                            axisLabel: {
+                                textStyle: {
+                                    color: '#A3A8AE'
+                                }
+                            },
+                            splitLine: {
+                                lineStyle: {
+                                    color: ['#F2F6FA']
+                                }
+
+                            }
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        color: ['#37C7D8'],
+                        legend: {
+                            // data: legendData,
+                            x: 'right', y: 'top',
+                            textStyle: {color: '#C0C3C7', fontSize: 12},
+                            itemWidth: 12,
+                            itemHeight: 12,
+                        },
+                        series: [{
+                            data:seriesdata,
+                            type: 'bar',
+                            barWidth: 30
+                        }]
+                    };
+                    return baroption;
+                }
+                var xdata = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+                var codeList = [];
+                var barIndex = '';
+                var seriesdata = [500];
+                var barcharts = echarts.init(document.getElementById('barcharts'));
+
+                barcharts.on('click', function (param) {
+                    barIndex = param.dataIndex;
+                    localStorage.setItem('departCode',codeList[barIndex]);
+                    localStorage.setItem('departName',param.name);
+                    window.location.href = "doctorComplaintDetails.html";
+                });
+                var jsonParam = {
+                    year:'',
+                    month:''
+                };
+                function getList(jsonParam){
+                    getAjax('/reg/appointchange/getComplaintStats',jsonParam,function (res) {
+                        xdata = res.data.xList;
+                        seriesdata = res.data.yList;
+                        codeList = res.data.codeList;
+                        var baroption = chartOpt(xdata,seriesdata);
+                        barcharts.setOption(baroption);
+                    });
+                }
+                getList(jsonParam);
+                form.on('submit(search)', function (data) {
+                    if(data.field.month && !data.field.year){
+                        layer.msg('请选择年份',{
+                            time:1000
+                        })
+                    }else {
+                        localStorage.setItem('tousuYear',data.field.year);
+                        localStorage.setItem('tousuMonth',data.field.month);
+                        jsonParam.year = data.field.year;
+                        jsonParam.month = data.field.month;
+                        getList(jsonParam);
+                    }
+                    return false; //很重要的一句话，不能删
+                });
+            });
+        })
+    </script>
+</body>
+</html>
